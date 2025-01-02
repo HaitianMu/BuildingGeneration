@@ -20,83 +20,81 @@ public class BuildingGeneratiion : MonoBehaviour
 
 
     // 创建一个矩形房间
+    /* public GameObject CreateRoom(float x, float z, float width, float height)
+     {
+         // Debug.Log($"即将生成房间的位置是： x: {x}, z: {z}, width: {width}, height: {height}");
+         // 创建一个新的立方体表示房间
+         GameObject room = GameObject.CreatePrimitive(PrimitiveType.Cube);
+
+         // 设置房间的位置和大小
+         room.transform.position = new Vector3(x + width / 2, 0f, z + height / 2); // 高度固定在 0
+         room.transform.localScale = new Vector3(width, 1f, height); // 高度 1，适应 x-z 平面
+
+         // 给房间随机上色
+         room.GetComponent<Renderer>().material.color = new Color(UnityEngine.Random.value, UnityEngine.Random.value, UnityEngine.Random.value);
+         // 返回生成的房间对象
+         return room;
+     }*/
+    //墙壁生成
     public GameObject CreateRoom(float x, float z, float width, float height)
     {
-        // Debug.Log($"即将生成房间的位置是： x: {x}, z: {z}, width: {width}, height: {height}");
-        // 创建一个新的立方体表示房间
-        GameObject room = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        // 创建房间的主体
+        GameObject room = new GameObject("Room");
 
-        // 设置房间的位置和大小
-        room.transform.position = new Vector3(x + width / 2, 0f, z + height / 2); // 高度固定在 0
-        room.transform.localScale = new Vector3(width, 1f, height); // 高度 1，适应 x-z 平面
+        // 生成房间的底部（如果需要的话，可以添加底部，作为房间地面）
+        GameObject floor = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        floor.transform.parent = room.transform;
+        floor.transform.position = new Vector3(x + width / 2, 0f, z + height / 2);
+        floor.transform.localScale = new Vector3(width, 0.1f, height); // 底部宽度和高度
 
-        // 给房间随机上色
-        room.GetComponent<Renderer>().material.color = new Color(UnityEngine.Random.value, UnityEngine.Random.value, UnityEngine.Random.value);
+        // 给房间底部上色
+        floor.GetComponent<Renderer>().material.color = new Color(0.5f, 0.3f, 0.2f); ; // 颜色可以自定义
+        AddRoomToList(floor); // 将地面加入到房间列表中
+                              // 添加四个墙壁
+        CreateWall(x, z, width, height, room);
+       /* // 给房间主体添加一个颜色，或者其他设置
+        room.GetComponent<Renderer>().material.color = new Color(UnityEngine.Random.value, UnityEngine.Random.value, UnityEngine.Random.value);*/
+
         // 返回生成的房间对象
         return room;
     }
-    //墙壁生成
-    /*   public GameObject CreateRoom(float x, float z, float width, float height)
-       {
-           // 创建房间的主体
-           GameObject room = new GameObject("Room");
 
-           // 生成房间的底部（如果需要的话，可以添加底部，作为房间地面）
-           GameObject floor = GameObject.CreatePrimitive(PrimitiveType.Cube);
-           floor.transform.parent = room.transform;
-           floor.transform.position = new Vector3(x + width / 2, 0f, z + height / 2);
-           floor.transform.localScale = new Vector3(width, 0.1f, height); // 底部宽度和高度
+    void CreateWall(float x, float z, float width, float height, GameObject room)
+    {
+        // 墙壁的厚度（可以调整，越大墙壁越厚）
+        float wallThickness = 0.1f;
+        float y = 3.0f;//墙体的高度
+        // 创建四面墙体：四个方向
+        // 1. 左墙
+        GameObject leftWall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        leftWall.transform.parent = room.transform;
+        leftWall.transform.position = new Vector3(x + wallThickness / 2, y / 2, z + height / 2);
+        leftWall.transform.localScale = new Vector3(wallThickness, y, height);
+        leftWall.GetComponent<Renderer>().material.color = new Color(0.5f, 0.7f, 1f); // 墙壁颜色
 
-           // 给房间底部上色
-           floor.GetComponent<Renderer>().material.color = new Color(0.7f, 0.7f, 0.7f); // 颜色可以自定义
-           AddRoomToList(floor); // 将地面加入到房间列表中
-           // 添加四个墙壁
-           CreateWall(x, z, width, height, room);
 
-           // 给房间主体添加一个颜色，或者其他设置
-           room.GetComponent<Renderer>().material.color = new Color(UnityEngine.Random.value, UnityEngine.Random.value, UnityEngine.Random.value);
-           // 将房间加入到列表
-           AddRoomToList(room);
-           // 返回生成的房间对象
-           return room;
-       }
+        // 2. 右墙
+        GameObject rightWall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        rightWall.transform.parent = room.transform;
+        rightWall.transform.position = new Vector3(x + width - wallThickness / 2, y / 2, z + height / 2);
+        rightWall.transform.localScale = new Vector3(wallThickness, y, height);
+        rightWall.GetComponent<Renderer>().material.color = new Color(0.5f, 0.7f, 1f); // 墙壁颜色
 
-       void CreateWall(float x, float z, float width, float height, GameObject room)
-       {
-           // 墙壁的厚度（可以调整，越大墙壁越厚）
-           float wallThickness = 0.1f;
-           float y = 3.0f;
-           // 创建四面墙体：四个方向
-           // 1. 左墙
-           GameObject leftWall = GameObject.CreatePrimitive(PrimitiveType.Cube);
-           leftWall.transform.parent = room.transform;
-           leftWall.transform.position = new Vector3(x + wallThickness / 2, y/2, z + height / 2);
-           leftWall.transform.localScale = new Vector3(wallThickness, y, height);
-           leftWall.GetComponent<Renderer>().material.color = new Color(0.5f, 0.3f, 0.2f); // 墙壁颜色
-           AddRoomToList(leftWall); // 将左墙加入到房间列表中
+        // 3. 前墙
+        GameObject frontWall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        frontWall.transform.parent = room.transform;
+        frontWall.transform.position = new Vector3(x + width / 2, y / 2, z + wallThickness / 2);
+        frontWall.transform.localScale = new Vector3(width, y, wallThickness);
+        frontWall.GetComponent<Renderer>().material.color = new Color(0.5f, 0.7f, 1f); // 墙壁颜色
 
-           // 2. 右墙
-           GameObject rightWall = GameObject.CreatePrimitive(PrimitiveType.Cube);
-           rightWall.transform.parent = room.transform;
-           rightWall.transform.position = new Vector3(x + width - wallThickness / 2, y / 2, z + height / 2);
-           rightWall.transform.localScale = new Vector3(wallThickness,y, height);
-           rightWall.GetComponent<Renderer>().material.color = new Color(0.5f, 0.3f, 0.2f); // 墙壁颜色
-           AddRoomToList(rightWall); // 将右墙加入到房间列表中
-           // 3. 前墙
-           GameObject frontWall = GameObject.CreatePrimitive(PrimitiveType.Cube);
-           frontWall.transform.parent = room.transform;
-           frontWall.transform.position = new Vector3(x + width / 2, y / 2, z + wallThickness / 2);
-           frontWall.transform.localScale = new Vector3(width, y, wallThickness);
-           frontWall.GetComponent<Renderer>().material.color = new Color(0.5f, 0.3f, 0.2f); // 墙壁颜色
-           AddRoomToList(frontWall); // 将前墙加入到房间列表中
-           // 4. 后墙
-           GameObject backWall = GameObject.CreatePrimitive(PrimitiveType.Cube);
-           backWall.transform.parent = room.transform;
-           backWall.transform.position = new Vector3(x + width / 2, y / 2, z + height - wallThickness / 2);
-           backWall.transform.localScale = new Vector3(width, y, wallThickness);
-           backWall.GetComponent<Renderer>().material.color = new Color(0.5f, 0.3f, 0.2f); // 墙壁颜色
-           AddRoomToList(backWall); // 将后墙加入到房间列表中
-       }*/
+        // 4. 后墙
+        GameObject backWall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        backWall.transform.parent = room.transform;
+        backWall.transform.position = new Vector3(x + width / 2, y / 2, z + height - wallThickness / 2);
+        backWall.transform.localScale = new Vector3(width, y, wallThickness);
+        backWall.GetComponent<Renderer>().material.color = new Color(0.5f, 0.7f, 1f); // 墙壁颜色
+
+    }
 
 
 
