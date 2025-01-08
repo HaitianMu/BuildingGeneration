@@ -1,41 +1,22 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 public class BuildingGeneratiion : MonoBehaviour
 {
 
-    // 输入的房间面积数组（已知数组）
-    public float[] roomAreas;
-
+    /*........................一、房间生成用到的数据结构.....................................*/
+    public float[] roomAreas;// 输入的房间面积数组（已知数组）
     public int num = 0;//记录已经生成的房间数量
-    // 总区域大小
-    private float totalArea;
+    private float totalArea; // 总区域大小
     public int totalWidth;//用于记录整个区域的宽
     public int totalHeight;//用于记录整个区域的高
-
-    // 用于存储生成的房间对象
-    private GameObject[] generatedRooms;
-
-    // 创建一个矩形房间
+    private GameObject[] generatedRooms; //存储生成的房间对象，这个数据用于重复生成时，删除之前生成的object
 
 
+    /*.............................二、房间之间生成门用到的数据结构................................*/
 
-    // 创建一个矩形房间
-    /* public GameObject CreateRoom(float x, float z, float width, float height)
-     {
-         // Debug.Log($"即将生成房间的位置是： x: {x}, z: {z}, width: {width}, height: {height}");
-         // 创建一个新的立方体表示房间
-         GameObject room = GameObject.CreatePrimitive(PrimitiveType.Cube);
 
-         // 设置房间的位置和大小
-         room.transform.position = new Vector3(x + width / 2, 0f, z + height / 2); // 高度固定在 0
-         room.transform.localScale = new Vector3(width, 1f, height); // 高度 1，适应 x-z 平面
-
-         // 给房间随机上色
-         room.GetComponent<Renderer>().material.color = new Color(UnityEngine.Random.value, UnityEngine.Random.value, UnityEngine.Random.value);
-         // 返回生成的房间对象
-         return room;
-     }*/
-    //墙壁生成
+    /*.....................................一、接受UI输入的区域面积和房间数目，然后进行房间的摆放和房间墙壁的生成.......................................*/
     public GameObject CreateRoom(float x, float z, float width, float height)
     {
         // 创建房间的主体
@@ -58,7 +39,6 @@ public class BuildingGeneratiion : MonoBehaviour
         // 返回生成的房间对象
         return room;
     }
-
     void CreateWall(float x, float z, float width, float height, GameObject room)
     {
         // 墙壁的厚度（可以调整，越大墙壁越厚）
@@ -95,11 +75,7 @@ public class BuildingGeneratiion : MonoBehaviour
         backWall.GetComponent<Renderer>().material.color = new Color(0.5f, 0.7f, 1f); // 墙壁颜色
 
     }
-
-
-
-    // 将生成的房间添加到房间列表
-    public void AddRoomToList(GameObject room)
+    public void AddRoomToList(GameObject room)// 将生成的房间添加到房间列表
     {
         // 将新生成的房间加入到房间列表中
         Array.Resize(ref generatedRooms, generatedRooms.Length + 1);
@@ -130,8 +106,7 @@ public class BuildingGeneratiion : MonoBehaviour
         // 使用方形树图生成房间
         CreateRoomRects(roomAreas, 0, roomAreas.Length, 0, 0, totalWidth, totalHeight, totalArea, (totalHeight / (float)totalWidth) > 1);
     }
-    // 清除上次生成的房间
-    void ClearPreviousRooms()
+    void ClearPreviousRooms()// 清除上次生成的房间
     {
         // 检查 generatedRooms 是否为 null，如果是，初始化为一个空数组
         if (generatedRooms == null)
@@ -151,8 +126,7 @@ public class BuildingGeneratiion : MonoBehaviour
         // 清空房间列表
         generatedRooms = new GameObject[0];
     }
-    // 找出长宽比最接近1的宽高组合，如果BestRatio>3或<1/3，则将该区域设置为正方形
-    void FindBestDimensions(float totalArea)
+    void FindBestDimensions(float totalArea)// 找出长宽比最接近1的宽高组合，如果BestRatio>3或<1/3，则将该区域设置为正方形
     {
         int bestWidth = 0;
         int bestHeight = 0;
@@ -204,23 +178,23 @@ public class BuildingGeneratiion : MonoBehaviour
         totalWidth = bestWidth;
         totalHeight = bestHeight;
     }
-
-    // 方形树图法划分房间
-    //areas 指需要划分的房间，
-    //start是当前区域的数组的起始点，end是数组的结束点，
-    //x，z分别表示当前划分区域的左下角，width是当前区域的长（x方向），height是当前区域的高（z方向），totalArea是当前区域的总面积大小
-    // isHorizontal 如果是1，则表示该区域使用的是竖直划分，即z/x>1;反之则z/x<1，在下一步划分当中采用相反的划分方法
     void CreateRoomRects(float[] areas, int start, int end, float x, float z, float width, float height, float totalArea,bool isHorizontal)
     {
+        // 方形树图法划分房间
+        //areas 指需要划分的房间，
+        //start是当前区域的数组的起始点，end是数组的结束点，
+        //x，z分别表示当前划分区域的左下角，width是当前区域的长（x方向），height是当前区域的高（z方向），totalArea是当前区域的总面积大小
+        // isHorizontal 如果是1，则表示该区域使用的是竖直划分，即z/x>1;反之则z/x<1，在下一步划分当中采用相反的划分方法
+
 
         // 输出当前递归的参数信息到 Unity 控制台
-       /* Debug.Log("........................................");
-        Debug.Log("Calling CreateRoomRects:");
-        Debug.Log($"  start: {start}, end: {end}");
-        Debug.Log($"  x: {x}, z: {z}");
-        Debug.Log($"  width: {width}, height: {height}");
-        Debug.Log($"  totalArea: {totalArea}, isHorizontal: {isHorizontal}");
-        Debug.Log("........................................");*/
+        /* Debug.Log("........................................");
+         Debug.Log("Calling CreateRoomRects:");
+         Debug.Log($"  start: {start}, end: {end}");
+         Debug.Log($"  x: {x}, z: {z}");
+         Debug.Log($"  width: {width}, height: {height}");
+         Debug.Log($"  totalArea: {totalArea}, isHorizontal: {isHorizontal}");
+         Debug.Log("........................................");*/
 
 
         if (start >= end) return;
@@ -312,6 +286,10 @@ public class BuildingGeneratiion : MonoBehaviour
         }
     }
 
+
+    /*.......................................二、在生成的房间之间生成门.....................................*/
+
+
     //程序的主入口
     void Start()
     {
@@ -327,4 +305,12 @@ public class BuildingGeneratiion : MonoBehaviour
     }
 }
 
-  
+
+
+/*...........................................下面是门的生成算法................................................................................
+  ...........................................下面是门的生成算法................................................................................
+  ...........................................下面是门的生成算法................................................................................
+  ...........................................下面是门的生成算法................................................................................
+  ...........................................下面是门的生成算法................................................................................*/
+
+
