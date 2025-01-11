@@ -37,11 +37,12 @@ public class UImanager : MonoBehaviour
             {
                 float[] result = DivideNumberRandomly(number1, number2);
 
-                // 输出结果
+                //调试代码
+                /*// 输出结果
                 foreach (float part in result)
                 {
                     Debug.Log("（随机数生成）随机划分区域大小的结果： " + part);
-                }
+                }*/
 
                 // 将划分结果传递给 BuildingGeneratiion
                 buildingGeneration.roomAreas = result; // 设置房间面积数组
@@ -102,7 +103,7 @@ public class UImanager : MonoBehaviour
             if (change >= 0) { adjustment = change * maxAdjustment; }
             else { adjustment = change * minAdjustment; }
 
-            Debug.Log("房间面积的偏差为：" + adjustment);
+            //Debug.Log("房间面积的偏差为：" + adjustment);调试用
             // 计算每个房间的面积，确保至少为 minValue
             float roomArea = baseArea + adjustment;
 
