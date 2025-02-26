@@ -6,15 +6,18 @@ TagManager:
   tags:
   - Exit
   - Door
+  - Human
+  - Robot
+  - Wall
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Wall
   - Water
   - UI
-  - 
-  - 
+  - Robot
+  - Human
   - 
   - 
   - 

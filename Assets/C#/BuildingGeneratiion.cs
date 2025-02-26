@@ -13,10 +13,13 @@ public class BuildingGeneratiion : MonoBehaviour
     public int totalWidth;//用于记录整个区域的宽
     public int totalHeight;//用于记录整个区域的高
     float y = 3.0f;//墙体的高度 ,
-    float doorWidth = 1.0f;//门的宽度
+    float doorWidth = 1.5f;//门的宽度
     private GameObject[] generatedRooms; //存储生成的房间对象，这个数据用于多次生成环境时，删除之前生成的object
 
-
+    public Material Floor ;
+    public Material Door;
+    public Material Exit;
+    public Material Wall;
     /*.............................二、房间之间生成门用到的数据结构................................*/
     public class Room
     {
@@ -305,8 +308,9 @@ public class BuildingGeneratiion : MonoBehaviour
         floor.transform.position = new Vector3(x + width / 2, 0f, z + height / 2);
         floor.transform.localScale = new Vector3(width, 0.1f, height); // 底部宽度和高度
 
-        // 给房间底部上色
-        floor.GetComponent<Renderer>().material.color = new UnityEngine.Color(0.5f, 0.3f, 0.2f);  // 颜色可以自定义
+        // 给房间底部上色 Assets/Material/Floor.mat
+        floor.GetComponent<Renderer>().material = Floor;
+
         AddRoomToList(floor); // 将地面加入到房间列表中
                               // 生成四个墙壁
         CreateWall(x, z, width, height, room);
@@ -329,7 +333,7 @@ public class BuildingGeneratiion : MonoBehaviour
         leftWall.transform.parent = room.transform;
         leftWall.transform.position = new Vector3(x + wallThickness / 2, y / 2, z + height / 2);
         leftWall.transform.localScale = new Vector3(wallThickness, y, height);
-        leftWall.GetComponent<Renderer>().material.color = new UnityEngine.Color(0.5f, 0.7f, 1f); // 墙壁颜色
+        leftWall.GetComponent<Renderer>().material = Wall; // 墙壁颜色
 
 
         // 2. 右墙
@@ -338,7 +342,7 @@ public class BuildingGeneratiion : MonoBehaviour
         rightWall.transform.parent = room.transform;
         rightWall.transform.position = new Vector3(x + width - wallThickness / 2, y / 2, z + height / 2);
         rightWall.transform.localScale = new Vector3(wallThickness, y, height);
-        rightWall.GetComponent<Renderer>().material.color = new UnityEngine.Color(0.5f, 0.7f, 1f); // 墙壁颜色
+        rightWall.GetComponent<Renderer>().material = Wall; // 墙壁颜色
 
         // 3. 后墙
         GameObject frontWall = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -346,7 +350,7 @@ public class BuildingGeneratiion : MonoBehaviour
         frontWall.transform.parent = room.transform;
         frontWall.transform.position = new Vector3(x + width / 2, y / 2, z + wallThickness / 2);
         frontWall.transform.localScale = new Vector3(width, y, wallThickness);
-        frontWall.GetComponent<Renderer>().material.color = new UnityEngine.Color(0.5f, 0.7f, 1f); // 墙壁颜色
+        frontWall.GetComponent<Renderer>().material = Wall; // 墙壁颜色
 
         // 4. 前墙
         GameObject backWall = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -354,7 +358,7 @@ public class BuildingGeneratiion : MonoBehaviour
         backWall.transform.parent = room.transform;
         backWall.transform.position = new Vector3(x + width / 2, y / 2, z + height - wallThickness / 2);
         backWall.transform.localScale = new Vector3(width, y, wallThickness);
-        backWall.GetComponent<Renderer>().material.color = new UnityEngine.Color(0.5f, 0.7f, 1f); // 墙壁颜色
+        backWall.GetComponent<Renderer>().material = Wall; // 墙壁颜色
 
     }
     public void AddRoomToList(GameObject room)// 将生成的房间添加到房间列表
@@ -424,12 +428,12 @@ public class BuildingGeneratiion : MonoBehaviour
                     // 右方相邻
                     if (Mathf.Abs(rooms[i].ZXposition.x + rooms[i].width - rooms[j].ZXposition.x) < 0.1f)
                     {
-                        Debug.Log("在该房间右方相邻");//调试用
+                       // Debug.Log("在该房间右方相邻");//调试用
                         // 如果两个房间在 x 轴方向上相邻,检查两个房间相邻部分在z轴方向的差值.如果<2，那么我们不认为这两个房间是相邻的,因为有 1 的距离要用来放门
                         //总体可分为三种情况
                         if (rooms[j].ZXposition.z < rooms[i].ZXposition.z && rooms[j].ZXposition.z + rooms[j].height > rooms[i].ZXposition.z && rooms[j].ZXposition.z + rooms[j].height - rooms[i].ZXposition.z >= 0.2)
                         {
-                            Debug.Log("在该房间右方相邻：情况1");//调试用
+                           // Debug.Log("在该房间右方相邻：情况1");//调试用
                             DoorPosition = new Vector3(rooms[i].ZXposition.x + rooms[i].width, y / 2, (rooms[i].ZXposition.z + rooms[j].ZXposition.z + rooms[j].height) / 2);
                            /* DivideWall(rooms[i].roomObject.transform.Find("RightWall"), DoorPosition, "RightWall");
                             DivideWall(rooms[j].roomObject.transform.Find("leftWall"), DoorPosition, "leftWall");*/
@@ -437,7 +441,7 @@ public class BuildingGeneratiion : MonoBehaviour
                         }
                         if (rooms[j].ZXposition.z < rooms[i].ZXposition.z + rooms[i].height && rooms[j].ZXposition.z + rooms[j].height > rooms[i].ZXposition.z + rooms[i].height && rooms[i].ZXposition.z + rooms[i].height - rooms[j].ZXposition.z >= 0.2)
                         {
-                            Debug.Log("在该房间右方相邻：情况2");//调试用
+                           // Debug.Log("在该房间右方相邻：情况2");//调试用
                             DoorPosition = new Vector3(rooms[i].ZXposition.x + rooms[i].width, y / 2, (rooms[j].ZXposition.z + rooms[i].ZXposition.z + rooms[i].height) / 2);
                            /* DivideWall(rooms[i].roomObject.transform.Find("RightWall"), DoorPosition, "RightWall");
                             DivideWall(rooms[j].roomObject.transform.Find("leftWall"), DoorPosition, "leftWall");*/
@@ -445,7 +449,7 @@ public class BuildingGeneratiion : MonoBehaviour
                         }
                         if (rooms[j].ZXposition.z >= rooms[i].ZXposition.z && rooms[j].ZXposition.z + rooms[j].height <= rooms[i].ZXposition.z + rooms[i].height && rooms[j].height >= 0.2)
                         {
-                            Debug.Log("在该房间右方相邻：情况3");//调试用
+                          //  Debug.Log("在该房间右方相邻：情况3");//调试用
                             DoorPosition = new Vector3(rooms[i].ZXposition.x + rooms[i].width, y / 2, rooms[j].ZXposition.z + rooms[j].height / 2);
                            /* DivideWall(rooms[i].roomObject.transform.Find("RightWall"), DoorPosition, "RightWall");
                             DivideWall(rooms[j].roomObject.transform.Find("leftWall"), DoorPosition, "leftWall");*/
@@ -453,7 +457,7 @@ public class BuildingGeneratiion : MonoBehaviour
                         }
                         if (rooms[j].ZXposition.z <rooms[i].ZXposition.z && rooms[j].ZXposition.z + rooms[j].height > rooms[i].ZXposition.z + rooms[i].height && rooms[i].height >= 0.2)
                         {
-                            Debug.Log("在该房间右方相邻：情况4");//调试用
+                         //   Debug.Log("在该房间右方相邻：情况4");//调试用
                             DoorPosition = new Vector3(rooms[i].ZXposition.x + rooms[i].width, y / 2, rooms[i].ZXposition.z + rooms[i].height);
                           /*  DivideWall(rooms[i].roomObject.transform.Find("RightWall"), DoorPosition, "RightWall");
                             DivideWall(rooms[j].roomObject.transform.Find("leftWall"), DoorPosition, "leftWall");*/
@@ -465,11 +469,11 @@ public class BuildingGeneratiion : MonoBehaviour
                     if (Mathf.Abs(rooms[i].ZXposition.x - rooms[j].width - rooms[j].ZXposition.x) < 0.1f)
                     {
                         // 如果两个房间在 x 轴方向上相邻,检查两个房间相邻部分在z轴方向的差值.如果<2，那么我们不认为这两个房间是相邻的,因为有 1 的距离要用来放门
-                        Debug.Log("在该房间左方相邻");//调试用
+                       // Debug.Log("在该房间左方相邻");//调试用
                         //总体可分为三种情况
                         if (rooms[j].ZXposition.z <= rooms[i].ZXposition.z && rooms[j].ZXposition.z + rooms[j].height >= rooms[i].ZXposition.z && rooms[j].ZXposition.z + rooms[j].height - rooms[i].ZXposition.z >= 0.2)
                         {
-                            Debug.Log("左方相邻第一种情况");//调试用
+                          //  Debug.Log("左方相邻第一种情况");//调试用
                             DoorPosition = new Vector3(rooms[i].ZXposition.x, y / 2, (rooms[i].ZXposition.z + rooms[j].ZXposition.z + rooms[j].height) / 2);
                          /*   DivideWall(rooms[i].roomObject.transform.Find("RightWall"), DoorPosition, "RightWall");
                             DivideWall(rooms[j].roomObject.transform.Find("leftWall"), DoorPosition, "leftWall");*/
@@ -477,7 +481,7 @@ public class BuildingGeneratiion : MonoBehaviour
                         }
                         if (rooms[j].ZXposition.z <= rooms[i].ZXposition.z + rooms[i].height && rooms[j].ZXposition.z + rooms[j].height >= rooms[i].ZXposition.z + rooms[i].height && rooms[i].ZXposition.z + rooms[i].height - rooms[j].ZXposition.z >= 0.2)
                         {
-                            Debug.Log("左方相邻第二种情况");//调试用
+                           // Debug.Log("左方相邻第二种情况");//调试用
                             DoorPosition = new Vector3(rooms[i].ZXposition.x, y / 2, (rooms[j].ZXposition.z + rooms[i].ZXposition.z + rooms[i].height) / 2);
                             /*DivideWall(rooms[i].roomObject.transform.Find("RightWall"), DoorPosition, "RightWall");
                             DivideWall(rooms[j].roomObject.transform.Find("leftWall"), DoorPosition, "leftWall");*/
@@ -485,7 +489,7 @@ public class BuildingGeneratiion : MonoBehaviour
                         }
                         if (rooms[j].ZXposition.z >= rooms[i].ZXposition.z && rooms[j].ZXposition.z + rooms[j].height <= rooms[i].ZXposition.z + rooms[i].height && rooms[j].height >= 0.2)
                         {
-                            Debug.Log("左方相邻第三种情况");//调试用
+                          //  Debug.Log("左方相邻第三种情况");//调试用
                             DoorPosition = new Vector3(rooms[i].ZXposition.x, y / 2, rooms[j].ZXposition.z + rooms[j].height / 2);
                           /*  DivideWall(rooms[i].roomObject.transform.Find("RightWall"), DoorPosition, "RightWall");
                             DivideWall(rooms[j].roomObject.transform.Find("leftWall"), DoorPosition, "leftWall");*/
@@ -493,7 +497,7 @@ public class BuildingGeneratiion : MonoBehaviour
                         }
                         if (rooms[j].ZXposition.z < rooms[i].ZXposition.z && rooms[j].ZXposition.z + rooms[j].height > rooms[i].ZXposition.z + rooms[i].height && rooms[i].height >= 0.2)
                         {
-                            Debug.Log("左方相邻第四种情况");//调试用
+                          //  Debug.Log("左方相邻第四种情况");//调试用
                             DoorPosition = new Vector3(rooms[i].ZXposition.x, y / 2, rooms[i].ZXposition.z + rooms[i].height);
                            /* DivideWall(rooms[i].roomObject.transform.Find("RightWall"), DoorPosition, "RightWall");
                             DivideWall(rooms[j].roomObject.transform.Find("leftWall"), DoorPosition, "leftWall");*/
@@ -504,11 +508,11 @@ public class BuildingGeneratiion : MonoBehaviour
                     //上方相邻
                     if (Mathf.Abs(rooms[i].ZXposition.z + rooms[i].height - rooms[j].ZXposition.z) < 0.1f)
                     {
-                        Debug.Log("在该房间上方相邻");//调试用
+                      //  Debug.Log("在该房间上方相邻");//调试用
                         // 如果两个房间在 z 轴方向上相邻，检查两个房间相邻部分在x轴方向的差值.如果<2，那么我们不认为这两个房间是相邻的,因为有 1 的距离要用来放门
                         if (rooms[j].ZXposition.x < rooms[i].ZXposition.x && rooms[j].ZXposition.x + rooms[j].width > rooms[i].ZXposition.x && rooms[j].ZXposition.x + rooms[j].width - rooms[i].ZXposition.x >= 0.2)
                         {
-                            Debug.Log("上方相邻第一种情况");//调试用
+                           // Debug.Log("上方相邻第一种情况");//调试用
                             DoorPosition = new Vector3((rooms[j].ZXposition.x + rooms[j].width + rooms[i].ZXposition.x) / 2, y / 2, rooms[i].ZXposition.z + rooms[i].height);
                          /*   DivideWall(rooms[i].roomObject.transform.Find("frontWall"), DoorPosition, "frontWall");
                             DivideWall(rooms[j].roomObject.transform.Find("backWall"), DoorPosition, "backWall");*/
@@ -516,7 +520,7 @@ public class BuildingGeneratiion : MonoBehaviour
                         }
                         else if (rooms[j].ZXposition.x < rooms[i].ZXposition.x + rooms[i].width && rooms[j].ZXposition.x + rooms[j].width > rooms[i].ZXposition.x + rooms[i].width && rooms[i].ZXposition.x + rooms[i].width - rooms[j].ZXposition.x >= 0.2)
                         {
-                            Debug.Log("上方相邻第二种情况");//调试用
+                          // Debug.Log("上方相邻第二种情况");//调试用
                             DoorPosition = new Vector3((rooms[i].ZXposition.x + rooms[i].width + rooms[j].ZXposition.x) / 2, y / 2, rooms[i].ZXposition.z + rooms[i].height);
                             /*DivideWall(rooms[i].roomObject.transform.Find("frontWall"), DoorPosition, "frontWall");
                             DivideWall(rooms[j].roomObject.transform.Find("backWall"), DoorPosition, "backWall");*/
@@ -524,7 +528,7 @@ public class BuildingGeneratiion : MonoBehaviour
                         }
                         else if (rooms[j].ZXposition.x >= rooms[i].ZXposition.x && rooms[j].ZXposition.x + rooms[j].width <= rooms[i].ZXposition.x + rooms[i].width && rooms[j].width >= 0.2)
                         {
-                            Debug.Log("上方相邻第三种情况");//调试用
+                           // Debug.Log("上方相邻第三种情况");//调试用
                             DoorPosition = new Vector3(rooms[j].ZXposition.x + rooms[j].width / 2, y / 2, rooms[i].ZXposition.z + rooms[i].height);
                           /*  DivideWall(rooms[i].roomObject.transform.Find("frontWall"), DoorPosition, "frontWall");
                             DivideWall(rooms[j].roomObject.transform.Find("backWall"), DoorPosition, "backWall");*/
@@ -532,7 +536,7 @@ public class BuildingGeneratiion : MonoBehaviour
                         }
                         else if (rooms[j].ZXposition.x < rooms[i].ZXposition.x && rooms[j].ZXposition.x + rooms[j].width > rooms[i].ZXposition.x + rooms[i].width && rooms[i].width >= 0.2)
                         {
-                            Debug.Log("上方相邻第四种情况");//调试用
+                           // Debug.Log("上方相邻第四种情况");//调试用
                             DoorPosition = new Vector3(rooms[i].ZXposition.x + rooms[i].width / 2, y / 2, rooms[i].ZXposition.z + rooms[i].height);
                           /*  DivideWall(rooms[i].roomObject.transform.Find("frontWall"), DoorPosition, "frontWall");
                             DivideWall(rooms[j].roomObject.transform.Find("backWall"), DoorPosition, "backWall");*/
@@ -543,10 +547,10 @@ public class BuildingGeneratiion : MonoBehaviour
                     if (Mathf.Abs(rooms[i].ZXposition.z - rooms[j].height - rooms[j].ZXposition.z) < 0.1f)
                     {
                         // 如果两个房间在 z 轴方向上相邻，检查两个房间相邻部分在x轴方向的差值.如果<2，那么我们不认为这两个房间是相邻的,因为有 1 的距离要用来放门
-                        Debug.Log("在该房间下方相邻");//调试用
+                       // Debug.Log("在该房间下方相邻");//调试用
                         if (rooms[j].ZXposition.x < rooms[i].ZXposition.x && rooms[j].ZXposition.x + rooms[j].width > rooms[i].ZXposition.x && rooms[j].ZXposition.x + rooms[j].width - rooms[i].ZXposition.x >= 0.2)
                         {
-                            Debug.Log("在该房间下方相邻，情况1");//调试用
+                          //  Debug.Log("在该房间下方相邻，情况1");//调试用
                             DoorPosition = new Vector3((rooms[j].ZXposition.x + rooms[j].width + rooms[i].ZXposition.x) / 2, y / 2, rooms[i].ZXposition.z);
                            /* DivideWall(rooms[i].roomObject.transform.Find("frontWall"), DoorPosition, "frontWall");
                             DivideWall(rooms[j].roomObject.transform.Find("backWall"), DoorPosition, "backWall");*/
@@ -554,7 +558,7 @@ public class BuildingGeneratiion : MonoBehaviour
                         }
                         else if (rooms[j].ZXposition.x < rooms[i].ZXposition.x + rooms[i].width && rooms[j].ZXposition.x + rooms[j].width > rooms[i].ZXposition.x + rooms[i].width && rooms[i].ZXposition.x + rooms[i].width - rooms[j].ZXposition.x >= 0.2)
                         {
-                            Debug.Log("在该房间下方相邻，情况2");//调试用 
+                           // Debug.Log("在该房间下方相邻，情况2");//调试用 
                             DoorPosition = new Vector3((rooms[j].ZXposition.x + rooms[j].width + rooms[i].ZXposition.x) / 2, y / 2, rooms[i].ZXposition.z);
                            /* DivideWall(rooms[i].roomObject.transform.Find("frontWall"), DoorPosition, "frontWall");
                             DivideWall(rooms[j].roomObject.transform.Find("backWall"), DoorPosition, "backWall");*/
@@ -563,7 +567,7 @@ public class BuildingGeneratiion : MonoBehaviour
                         }
                         else if (rooms[j].ZXposition.x >= rooms[i].ZXposition.x && rooms[j].ZXposition.x + rooms[j].width <= rooms[i].ZXposition.x + rooms[i].width && rooms[j].width >= 0.2)
                         {
-                            Debug.Log("在该房间下方相邻，情况3");//调试用
+                           // Debug.Log("在该房间下方相邻，情况3");//调试用
                             DoorPosition = new Vector3((rooms[j].ZXposition.x + rooms[j].width + rooms[i].ZXposition.x) / 2, y / 2, rooms[i].ZXposition.z);
                            /* DivideWall(rooms[i].roomObject.transform.Find("frontWall"), DoorPosition, "frontWall");
                             DivideWall(rooms[j].roomObject.transform.Find("backWall"), DoorPosition, "backWall");*/
@@ -571,7 +575,7 @@ public class BuildingGeneratiion : MonoBehaviour
                         }
                         else if (rooms[j].ZXposition.x < rooms[i].ZXposition.x && rooms[j].ZXposition.x + rooms[j].width > rooms[i].ZXposition.x + rooms[i].width && rooms[i].width >= 0.2)
                         {
-                            Debug.Log("在该房间下方相邻，情况4");//调试用
+                          //  Debug.Log("在该房间下方相邻，情况4");//调试用
                             DoorPosition = new Vector3((rooms[j].ZXposition.x + rooms[j].width + rooms[i].ZXposition.x) / 2, y / 2, rooms[i].ZXposition.z);
                             /*DivideWall(rooms[i].roomObject.transform.Find("frontWall"), DoorPosition, "frontWall");
                             DivideWall(rooms[j].roomObject.transform.Find("backWall"), DoorPosition, "backWall");*/
@@ -602,44 +606,47 @@ public class BuildingGeneratiion : MonoBehaviour
     }
     void CreateDoor(Vector3 position, float width,  bool isHorizontal, String Tag)
         {//参数依次是 门的位置，门的宽度，门如何摆放，门的标签，门的高度默认是全局变量中的 y 值
-            // 创建一个新的立方体（门）
+            // 创建一个新的立方体（门），并将其设置为触发器
             GameObject door = GameObject.CreatePrimitive(PrimitiveType.Cube);
-             // 将门添加到房间列表中
-            AddRoomToList(door);
+            door.GetComponent<BoxCollider>().isTrigger = true;
+           // 将门添加到房间列表中
+          AddRoomToList(door);
         // 设置门的名称和标签
         door.name = Tag;
             door.tag = Tag;
 
             // 设置门的位置
-            door.transform.position =new Vector3(position.x,position.y-0.5f,position.z);
+            door.transform.position =new Vector3(position.x,position.y,position.z);
 
             // 判断是否是横向门
             if (isHorizontal)
             {
                 // 如果是横向门，设置门的大小
                 // 0.3f 是门的厚度，y-1 是门的高度，1f 是门的宽度
-                door.transform.localScale = new Vector3(0.4f,2 , doorWidth);
+                door.transform.localScale = new Vector3(0.4f,3 , doorWidth);
 
                // 设置门的颜色
                if (Tag == "Exit"){
-                door.GetComponent<Renderer>().material.color = new UnityEngine.Color(0, 0.5f, 0);  // 绿色
+                door.GetComponent<Renderer>().material= Exit;  // 绿色
                }
                else{
-                door.GetComponent<Renderer>().material.color = new UnityEngine.Color(1, 1, 1);  // 白色
+                door.GetComponent<Renderer>().material = Door;  // 白色
                }
             }
             else
             {
                 // 如果是竖向门，设置门的大小
                 // 1f 是门的宽度，y-1 是门的高度，0.3f 是门的厚度
-                door.transform.localScale = new Vector3(doorWidth, 2, 0.4f);
+                door.transform.localScale = new Vector3(doorWidth, 3, 0.4f);
 
             // 设置门的颜色
-            if (Tag == "Exit"){
-                door.GetComponent<Renderer>().material.color = new UnityEngine.Color(0, 0.5f, 0);  // 绿色
+            if (Tag == "Exit")
+            {
+                door.GetComponent<Renderer>().material = Exit;  // 绿色
             }
-            else{
-                door.GetComponent<Renderer>().material.color = new UnityEngine.Color(1, 1, 1);  // 白色
+            else
+            {
+                door.GetComponent<Renderer>().material = Door;  // 白色
             }
         }
 
