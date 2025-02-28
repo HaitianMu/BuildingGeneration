@@ -1,0 +1,42 @@
+{
+    "name": "root",
+    "metadata": {
+        "timer_format_version": "0.1.0",
+        "start_time_seconds": "1740641584",
+        "python_version": "3.8.20 (default, Oct  3 2024, 15:19:54) [MSC v.1929 64 bit (AMD64)]",
+        "command_line_arguments": "C:\\Users\\forab\\.conda\\envs\\EvacARL\\Scripts\\mlagents-learn config-7.yaml --run-id=Tr",
+        "mlagents_version": "0.30.0",
+        "mlagents_envs_version": "0.30.0",
+        "communication_protocol_version": "1.5.0",
+        "pytorch_version": "1.8.2+cu111",
+        "numpy_version": "1.21.2",
+        "end_time_seconds": "1740641645"
+    },
+    "total": 61.264247399999995,
+    "count": 1,
+    "self": 0.007750599999994279,
+    "children": {
+        "run_training.setup": {
+            "total": 0.08817489999999983,
+            "count": 1,
+            "self": 0.08817489999999983
+        },
+        "TrainerController.start_learning": {
+            "total": 61.1683219,
+            "count": 1,
+            "self": 0.00022170000000443224,
+            "children": {
+                "TrainerController._reset_env": {
+                    "total": 61.1680811,
+                    "count": 1,
+                    "self": 61.1680811
+                },
+                "TrainerController._save_models": {
+                    "total": 1.9099999995830785e-05,
+                    "count": 1,
+                    "self": 1.9099999995830785e-05
+                }
+            }
+        }
+    }
+}
