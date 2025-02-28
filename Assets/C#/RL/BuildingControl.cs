@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
-public class BuildingGeneratiion : MonoBehaviour
+public class BuildingControl : MonoBehaviour
 {
 
     /*........................一、房间生成用到的数据结构.....................................*/
@@ -14,9 +14,10 @@ public class BuildingGeneratiion : MonoBehaviour
     public int totalHeight;//用于记录整个区域的高
     float y = 3.0f;//墙体的高度 ,
     float doorWidth = 1.5f;//门的宽度
-    private GameObject[] generatedRooms; //存储生成的房间对象，这个数据用于多次生成环境时，删除之前生成的object
 
-    public Material Floor ;
+    private GameObject[] AllObjects; //存储单次生成的所有物体，这个数据用于多次生成环境时，清空之前的场景
+
+    public Material Floor;
     public Material Door;
     public Material Exit;
     public Material Wall;
@@ -101,7 +102,7 @@ public class BuildingGeneratiion : MonoBehaviour
         }
 
     }
-    private List<Room> roomList = new List<Room>();  // 存储生成的所有房间对象
+    private List<Room> roomList = new List<Room>();  // 存储生成的所有房间对象，用于后续门的生成
 
     /*.....................................一、接受UI输入的区域面积和房间数目，然后进行房间的摆放和房间墙壁的生成.......................................*/
     public void GenerateRooms()
@@ -131,7 +132,9 @@ public class BuildingGeneratiion : MonoBehaviour
         // 创建房间之间的门，确保房间连通
         Room [][]CN= GenerateCN(roomList.ToArray());
         //CreateDoorBetweenRooms();
-        CreateDoorBetweenRooms(roomList.ToArray(), CN); //根据连通图CN生成门
+
+        //CreateDoorBetweenRooms(roomList.ToArray(), CN); //根据连通图CN生成门
+
         //在最后一个房间的左后两个墙中心生成两扇门作为逃生出口
         AddExitDoors(roomList[roomList.Count - 1]);
     }
@@ -212,7 +215,7 @@ public class BuildingGeneratiion : MonoBehaviour
         if (end - start == 1)
         {
             GameObject room = CreateRoom(x, z, width, height);
-            AddRoomToList(room);
+            AddObjectToList(room);
             return;
         }
 
@@ -270,7 +273,7 @@ public class BuildingGeneratiion : MonoBehaviour
             {
                 float roomWidth = (areas[i] / splitArea) * width; // 当前小区域的宽度
                 GameObject room = CreateRoom(currentX, z, roomWidth, splitHeight);
-                AddRoomToList(room);
+                AddObjectToList(room);
                 currentX += roomWidth; // 更新下一个区域的y坐标
             }
             //递归生成上半部分
@@ -288,7 +291,7 @@ public class BuildingGeneratiion : MonoBehaviour
             {
                 float roomHeight = (areas[i] / splitArea) * height; // 当前小区域的高度
                 GameObject room = CreateRoom(x, currentZ, splitWidth, roomHeight);
-                AddRoomToList(room);
+                AddObjectToList(room);
                 currentZ += roomHeight; // 更新下一个区域的x坐标
             }
             //递归生成右半部分
@@ -311,15 +314,13 @@ public class BuildingGeneratiion : MonoBehaviour
         // 给房间底部上色 Assets/Material/Floor.mat
         floor.GetComponent<Renderer>().material = Floor;
 
-        AddRoomToList(floor); // 将地面加入到房间列表中
+       /* AddObjectToList(floor); // 将地面加入到房间列表中*/ //墙壁是房间的子物体，房间已经被清除了
                               // 生成四个墙壁
         CreateWall(x, z, width, height, room);
 
         // 将新房间加入房间列表,并记录每个房间的位置和大小
         Room newRoom = new Room(room, new Vector3(x, 0f, z), width, height);
         roomList.Add(newRoom);  // 将新房间加入房间列表
-
-
         return room; // 返回生成的房间对象
     }
     void CreateWall(float x, float z, float width, float height, GameObject room)
@@ -361,31 +362,32 @@ public class BuildingGeneratiion : MonoBehaviour
         backWall.GetComponent<Renderer>().material = Wall; // 墙壁颜色
 
     }
-    public void AddRoomToList(GameObject room)// 将生成的房间添加到房间列表
+    public void AddObjectToList(GameObject room)// 将生成的房间添加到房间列表
     {
         // 将新生成的房间加入到房间列表中
-        Array.Resize(ref generatedRooms, generatedRooms.Length + 1);
-        generatedRooms[generatedRooms.Length - 1] = room;
+        Array.Resize(ref AllObjects, AllObjects.Length + 1);
+        AllObjects[AllObjects.Length - 1] = room;
     }
     void ClearPreviousRooms()// 清除上次生成的房间
         {
-            // 检查 AllObjects 是否为 null，如果是，初始化为一个空数组
-            if (generatedRooms == null)
-            {
-                generatedRooms = new GameObject[0];
-            }
-
+        // 检查 AllObjects 是否为 null，如果是，初始化为一个空数组
+        if (AllObjects == null)
+        {
+            AllObjects = new GameObject[0];
+        }
+        else
+        {
             // 查找所有已经生成的房间对象并销毁
-            foreach (var room in generatedRooms)
+            foreach (var room in AllObjects)
             {
                 if (room != null)
                 {
                     Destroy(room);
                 }
             }
-
+        }
             // 清空房间列表
-            generatedRooms = new GameObject[0];
+            AllObjects = new GameObject[0];
         }
   
 
@@ -407,7 +409,7 @@ public class BuildingGeneratiion : MonoBehaviour
                     connection[i][j] = rooms[j]; // 添加连接
                     connection[j][i] = rooms[i]; // 双向连接
 
-                    Debug.Log(rooms[i].roomObject.name + "和" + rooms[j].roomObject.name+"相邻");//调试用
+                  /*  Debug.Log(rooms[i].roomObject.name + "和" + rooms[j].roomObject.name+"相邻");//调试用*/
                 }
             }
         }
@@ -423,7 +425,7 @@ public class BuildingGeneratiion : MonoBehaviour
             {
                 if (CN[i][j] != null)//说明两个房间是邻接的，接着判断两个房间是上、下、左、右哪种相邻方式，根据不同的相邻方式进行不同的处理
                 {
-                    Debug.Log(rooms[i].roomObject.name + "和" + rooms[j].roomObject.name + "相邻");//调试用
+                    /*Debug.Log(rooms[i].roomObject.name + "和" + rooms[j].roomObject.name + "相邻");//调试用*/
                     Vector3 DoorPosition;
                     // 右方相邻
                     if (Mathf.Abs(rooms[i].ZXposition.x + rooms[i].width - rooms[j].ZXposition.x) < 0.1f)
@@ -596,10 +598,10 @@ public class BuildingGeneratiion : MonoBehaviour
             Vector3 FrontDoorPosition = new Vector3(EscapeRoom.ZXposition.x + EscapeRoom.width/2, wallHeight / 2, EscapeRoom.ZXposition.z + EscapeRoom.height);
 
         // 创建右方的逃生门
-        DivideWall(EscapeRoom.roomObject.transform.Find("rightWall"), RightDoorPosition, "rightWall");
+      /*  DivideWall(EscapeRoom.roomObject.transform.Find("rightWall"), RightDoorPosition, "rightWall");*/
         CreateDoor(RightDoorPosition, 0.1f, true, "Exit");
         //创建上方的逃生门
-        DivideWall(EscapeRoom.roomObject.transform.Find("frontWall"), FrontDoorPosition, "frontWall");
+      /*  DivideWall(EscapeRoom.roomObject.transform.Find("frontWall"), FrontDoorPosition, "frontWall");*/
         CreateDoor(FrontDoorPosition, 0.1f, false, "Exit");
        
         //Transform child = transform.Find("ChildName");
@@ -609,10 +611,10 @@ public class BuildingGeneratiion : MonoBehaviour
             // 创建一个新的立方体（门），并将其设置为触发器
             GameObject door = GameObject.CreatePrimitive(PrimitiveType.Cube);
             door.GetComponent<BoxCollider>().isTrigger = true;
-           // 将门添加到房间列表中
-          AddRoomToList(door);
-        // 设置门的名称和标签
-        door.name = Tag;
+           // 将门添加到待删除列表中
+            AddObjectToList(door);
+           // 设置门的名称和标签
+            door.name = Tag;
             door.tag = Tag;
 
             // 设置门的位置
@@ -648,9 +650,7 @@ public class BuildingGeneratiion : MonoBehaviour
             {
                 door.GetComponent<Renderer>().material = Door;  // 白色
             }
-        }
-
-           
+        }    
         }
     void DivideWall(Transform wall,Vector3 DoorPosition, String WallName)
     { //划分墙壁，将墙壁分为两部分，将门的部位留出来，根据墙壁的名字来决定如何划分

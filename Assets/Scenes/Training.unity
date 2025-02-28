@@ -386,7 +386,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3186727676278016167, guid: 29835092eed475c44abba419f6f679c3, type: 3}
       propertyPath: m_Size.y
-      value: 2.16
+      value: 1.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 3186727676278016167, guid: 29835092eed475c44abba419f6f679c3, type: 3}
+      propertyPath: m_Size.z
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3186727676278016167, guid: 29835092eed475c44abba419f6f679c3, type: 3}
       propertyPath: m_IsTrigger
@@ -1631,7 +1635,7 @@ PrefabInstance:
     - target: {fileID: 10268829736374538, guid: d2f15848e3a6dd148849a6260719d26b, type: 3}
       propertyPath: m_Model
       value: 
-      objectReference: {fileID: 5022602860645237092, guid: 4d6b38a2eacb0324fa63ba8243d0f327, type: 3}
+      objectReference: {fileID: 0}
     - target: {fileID: 10268829736374538, guid: d2f15848e3a6dd148849a6260719d26b, type: 3}
       propertyPath: m_BehaviorType
       value: 0

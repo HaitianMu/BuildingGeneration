@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using System.Linq;
 using Unity.Barracuda;
+using TMPro;
 
 public class MultiAgent : Agent
 {
@@ -173,8 +174,50 @@ public class MultiAgent : Agent
        // Debug.Log("Total observations added: " + num);
     }
 
-
     public override void OnActionReceived(ActionBuffers actions)
+    {
+        if (myEnv.useRobot is false)
+            return;
+        if (isTrans)  // 判断过渡状态
+            return;
+
+        MoveAgent(actions);  // 移动Agent
+
+        // 1. 任务完成奖励
+        if (floor_human == 0)
+        {
+            AddReward(10f);  // 完成任务奖励
+            EndEpisode();
+            return;
+        }
+
+        // 2. 引导奖励：当机器人接近人类时
+        foreach (Person human in myEnv.personList)
+        {
+            float distanceToHuman = Vector3.Distance(robot.transform.position, human.transform.position);
+            if (distanceToHuman < 5f)
+            {
+                AddReward(0.1f);  // 接近人类奖励
+            }
+        }
+
+        // 3. 跟随奖励：当人类开始跟随机器人时
+        if (robotInfo.robotFollowerCounter > 0)
+        {
+            AddReward(0.2f);  // 每有一个跟随者，给予奖励
+        }
+
+        // 4. 时间惩罚：鼓励尽快完成任务
+        AddReward(-0.01f * Time.deltaTime);
+
+        // 5. 无效动作惩罚
+        if (IsIrrelevantMove(actions))
+        {
+            AddReward(-0.1f);  // 无效动作惩罚
+        }
+  
+    }//奖励函数V2.0
+    /*public override void OnActionReceived(ActionBuffers actions)
     {
         if (myEnv.useRobot is false)
             return;
@@ -211,7 +254,7 @@ public class MultiAgent : Agent
         // 你还可以加入更复杂的奖励，比如基于时间或者效率的奖励
         float timePenalty = Time.timeSinceLevelLoad * -0.05f;  // 基于时间的惩罚
         SetReward(timePenalty);
-    }
+    } //奖励函数V1.0*/
 
     //定义无效动作，以给予机器人惩罚
     private bool IsIrrelevantMove(ActionBuffers actions)
