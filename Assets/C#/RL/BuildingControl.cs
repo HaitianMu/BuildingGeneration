@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.AI.Navigation;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -8,7 +9,8 @@ public class BuildingControl : MonoBehaviour
 
     /*........................一、房间生成用到的数据结构.....................................*/
     public float[] roomAreas;// 输入的房间面积数组（已知数组）
-    public int num = 1;//记录已经生成的房间数量,用于给房间编号  
+    public int RoomNum = 1;//记录已经生成的房间数量,用于给房间编号  
+    public int doorNum = 1;//记录已经生成的门数量,用于给门编号 
     private float totalArea; // 总区域大小
     public int totalWidth;//用于记录整个区域的宽
     public int totalHeight;//用于记录整个区域的高
@@ -102,7 +104,13 @@ public class BuildingControl : MonoBehaviour
         }
 
     }
-    private List<Room> roomList = new List<Room>();  // 存储生成的所有房间对象，用于后续门的生成
+    public List<Room> roomList = new List<Room>();  // 存储生成的所有房间对象，用于后续门的生成
+
+    /*.............................三、生成导航使用的数据结构................................*/
+
+    public GameObject ParentObject;
+
+
 
     /*.....................................一、接受UI输入的区域面积和房间数目，然后进行房间的摆放和房间墙壁的生成.......................................*/
     public void GenerateRooms()
@@ -111,8 +119,9 @@ public class BuildingControl : MonoBehaviour
         {
             Debug.Log("（生成器接受到的数据）" + part);
         }*/
-        num = 1;  //重置房间计数器
-        ClearPreviousRooms(); // 清除上次生成的房间
+        RoomNum = 1;  //重置房间计数器
+        doorNum = 1;  //重置门计数器
+
         // 计算总面积
         totalArea = 0f;
         foreach (var area in roomAreas)
@@ -129,16 +138,48 @@ public class BuildingControl : MonoBehaviour
 
         // 使用方形树图生成房间
         CreateRoomRects(roomAreas, 0, roomAreas.Length, 0, 0, totalWidth, totalHeight, totalArea, (totalHeight / (float)totalWidth) > 1);
+
+
         // 创建房间之间的门，确保房间连通
         Room [][]CN= GenerateCN(roomList.ToArray());
         //CreateDoorBetweenRooms();
 
-        //CreateDoorBetweenRooms(roomList.ToArray(), CN); //根据连通图CN生成门
+         CreateDoorBetweenRooms(roomList.ToArray(), CN); //根据连通图CN生成门
 
         //在最后一个房间的左后两个墙中心生成两扇门作为逃生出口
         AddExitDoors(roomList[roomList.Count - 1]);
     }
+    public void ClearPreviousRooms()// 场景重置函数.   ,在BeginEpisode的时候调用
+    {
+        Debug.Log("1.清空场景函数");
+        // 检查 AllObjects 是否为 null，如果是，初始化为一个空数组
+        roomList = new List<Room>();
+        RoomNum = 1;
+        doorNum = 1;
+        if (AllObjects == null)
+        {
+            AllObjects = new GameObject[0];
+        }
+        else
+        {
+            // 查找所有已经生成的房间对象并销毁
+            foreach (var room in AllObjects)
+            {
+                if (room != null)
+                {
+                    Debug.Log(room.name + "已经被清除");
+                    //注意 Destroy()并非立即执行，如需要立即对销毁操作执行，应采用DestroyImmediate()
+                    DestroyImmediate(room);
 
+                }
+            }
+        }
+        // 清空房间列表
+        AllObjects = new GameObject[0];
+
+        GameObject tem;
+        ParentObject = GameObject.Find("Building");
+    }
     void FindBestDimensions(float totalArea)// 找出长宽比最接近1的宽高组合，如果BestRatio>3或<1/3，则将该区域设置为正方形
     {
         int bestWidth = 0;
@@ -198,8 +239,6 @@ public class BuildingControl : MonoBehaviour
         //start是当前区域的数组的起始点，end是数组的结束点，
         //x，z分别表示当前划分区域的左下角，width是当前区域的长（x方向），height是当前区域的高（z方向），totalArea是当前区域的总面积大小
         // isHorizontal 如果是1，则表示该区域使用的是竖直划分，即z/x>1;反之则z/x<1，在下一步划分当中采用相反的划分方法
-
-
         // 输出当前递归的参数信息到 Unity 控制台
         /* Debug.Log("........................................");
          Debug.Log("Calling CreateRoomRects:");
@@ -225,11 +264,8 @@ public class BuildingControl : MonoBehaviour
         // 我们依据
         int splitIndex = start;
         float splitArea = 0; //划分后的面积
-
-
         float targetArea = totalArea / 5; //目标面积,
                                           //这里暂时将划分点改为总面积的1/10，以便于后面连通图的产生。连通图大致会最多划分为10个区域，所以产生的房间数最少应为10个，2025.1.1 目前还在考虑
-
         float minDifference = float.MaxValue; // 用来记录与目标面积的最小差距
         float currentArea = 0;//当前划分的面积
 
@@ -257,9 +293,6 @@ public class BuildingControl : MonoBehaviour
         {
             splitArea += areas[i];
         }
-
-
-
         //splitArea划分出来区域的面积
         // 当前方向的划分
         if (isHorizontal)
@@ -301,11 +334,13 @@ public class BuildingControl : MonoBehaviour
     public GameObject CreateRoom(float x, float z, float width, float height)
     {
         // 创建房间的主体
-        GameObject room = new GameObject("Room" + num);
-        num++;
+        GameObject room = new GameObject("Room" + RoomNum);
+        room.transform.parent = ParentObject.transform;
+        RoomNum++;
 
         // 生成房间的底部（如果需要的话，可以添加底部，作为房间地面）
         GameObject floor = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        floor.AddComponent<NavMeshModifier>();
         floor.name = "floor";
         floor.transform.parent = room.transform;
         floor.transform.position = new Vector3(x + width / 2, 0f, z + height / 2);
@@ -364,43 +399,64 @@ public class BuildingControl : MonoBehaviour
     }
     public void AddObjectToList(GameObject room)// 将生成的房间添加到房间列表
     {
+        Debug.Log(room.name+"已经被加入垃圾桶中");
         // 将新生成的房间加入到房间列表中
         Array.Resize(ref AllObjects, AllObjects.Length + 1);
         AllObjects[AllObjects.Length - 1] = room;
     }
-    void ClearPreviousRooms()// 清除上次生成的房间
-        {
-        // 检查 AllObjects 是否为 null，如果是，初始化为一个空数组
-        if (AllObjects == null)
-        {
-            AllObjects = new GameObject[0];
-        }
-        else
-        {
-            // 查找所有已经生成的房间对象并销毁
-            foreach (var room in AllObjects)
-            {
-                if (room != null)
-                {
-                    Destroy(room);
-                }
-            }
-        }
-            // 清空房间列表
-            AllObjects = new GameObject[0];
-        }
-  
 
     /*.......................................二、在生成的房间之间生成门.....................................*/
     Room[][] GenerateCN(Room [] rooms) { //生成连通图
-        Room[][] connection = new Room[rooms.Length][];
+
+        int n = rooms.Length;
+        Room[][] connection = new Room[n][];
         for (int i = 0; i < rooms.Length; i++)
         {
             // 对每个房间，初始化一个新的邻居列表
             connection[i] = new Room[rooms.Length];
         }
+
+        // 使用Prim算法生成最小生成树。。。。。。。。。。。。。。。。。。。。。。。。。。。。。
+        /*  bool[] inMST = new bool[n];
+          int[] parent = new int[n];
+          int[] key = new int[n];
+
+          for (int i = 0; i < n; i++)
+          {
+              key[i] = int.MaxValue;
+          }
+          key[0] = 0; // 从第一个房间开始
+          parent[0] = -1; // 第一个房间没有父节点
+
+          for (int count = 0; count < n - 1; count++)
+          {
+              int u = MinKey(key, inMST);
+              inMST[u] = true;
+              for (int v = 0; v < n; v++)
+              {
+                  if (rooms[u].IsAdjacentTo(rooms[v])) // 如果两个房间相邻
+                  {
+                      int weight = 1; // 假设权重为1，或者根据实际情况计算
+                      if (!inMST[v] && weight < key[v])
+                      {
+                          parent[v] = u;
+                          key[v] = weight;
+                      }
+                  }
+              }
+          }
+
+          // 根据parent数组构建最小生成树
+          for (int i = 1; i < n; i++)
+          {
+              connection[parent[i]][i] = rooms[i];
+              connection[i][parent[i]] = rooms[parent[i]];
+          }
+
+          return connection;*/
+        // 使用Prim算法生成最小生成树。。。。。。。。。。。。。。。。。。。。。。。。。。。。。
         // 填充连通图
-        for (int i = 0; i < rooms.Length; i++)
+        for (int i = 0; i < rooms.Length; i++)  
         {
             for (int j = i + 1; j < rooms.Length; j++)
             {
@@ -409,16 +465,35 @@ public class BuildingControl : MonoBehaviour
                     connection[i][j] = rooms[j]; // 添加连接
                     connection[j][i] = rooms[i]; // 双向连接
 
-                  /*  Debug.Log(rooms[i].roomObject.name + "和" + rooms[j].roomObject.name+"相邻");//调试用*/
+                   // Debug.Log(rooms[i].roomObject.name + "和" + rooms[j].roomObject.name + "相邻");//调试用
                 }
             }
         }
         return connection;
     }
 
+
+    private static int MinKey(int[] key, bool[] inMST)
+    {
+        //inMST = [true, false, false, false] 用于相连的各个节点是否加入树
+        int min = int.MaxValue;//用于记录当前找到的最小权值。
+        int minIndex = -1;      //用于记录具有最小权值的节点的索引。
+
+        for (int v = 0; v < key.Length; v++)
+        {
+            if (!inMST[v] && key[v] < min)
+            {
+                min = key[v];
+                minIndex = v;
+            }
+        }
+
+        return minIndex;
+    }
+
     void CreateDoorBetweenRooms(Room[] rooms, Room[][] CN) //根据连通图CN生成门
         {
-
+        String DoorName = "Door" + doorNum;
         for (int i = 0; i < rooms.Length; i++)
         {
             for (int j = i; j < rooms.Length; j++)
@@ -504,7 +579,6 @@ public class BuildingControl : MonoBehaviour
                            /* DivideWall(rooms[i].roomObject.transform.Find("RightWall"), DoorPosition, "RightWall");
                             DivideWall(rooms[j].roomObject.transform.Find("leftWall"), DoorPosition, "leftWall");*/
                             CreateDoor(DoorPosition, doorWidth, true, "Door");
-
                         }
                     }
                     //上方相邻
@@ -519,6 +593,8 @@ public class BuildingControl : MonoBehaviour
                          /*   DivideWall(rooms[i].roomObject.transform.Find("frontWall"), DoorPosition, "frontWall");
                             DivideWall(rooms[j].roomObject.transform.Find("backWall"), DoorPosition, "backWall");*/
                             CreateDoor(DoorPosition, doorWidth, false, "Door");
+                            
+
                         }
                         else if (rooms[j].ZXposition.x < rooms[i].ZXposition.x + rooms[i].width && rooms[j].ZXposition.x + rooms[j].width > rooms[i].ZXposition.x + rooms[i].width && rooms[i].ZXposition.x + rooms[i].width - rooms[j].ZXposition.x >= 0.2)
                         {
@@ -527,6 +603,7 @@ public class BuildingControl : MonoBehaviour
                             /*DivideWall(rooms[i].roomObject.transform.Find("frontWall"), DoorPosition, "frontWall");
                             DivideWall(rooms[j].roomObject.transform.Find("backWall"), DoorPosition, "backWall");*/
                             CreateDoor(DoorPosition, doorWidth, false, "Door");
+                           
                         }
                         else if (rooms[j].ZXposition.x >= rooms[i].ZXposition.x && rooms[j].ZXposition.x + rooms[j].width <= rooms[i].ZXposition.x + rooms[i].width && rooms[j].width >= 0.2)
                         {
@@ -535,6 +612,7 @@ public class BuildingControl : MonoBehaviour
                           /*  DivideWall(rooms[i].roomObject.transform.Find("frontWall"), DoorPosition, "frontWall");
                             DivideWall(rooms[j].roomObject.transform.Find("backWall"), DoorPosition, "backWall");*/
                             CreateDoor(DoorPosition, doorWidth, false, "Door");
+                            
                         }
                         else if (rooms[j].ZXposition.x < rooms[i].ZXposition.x && rooms[j].ZXposition.x + rooms[j].width > rooms[i].ZXposition.x + rooms[i].width && rooms[i].width >= 0.2)
                         {
@@ -543,6 +621,7 @@ public class BuildingControl : MonoBehaviour
                           /*  DivideWall(rooms[i].roomObject.transform.Find("frontWall"), DoorPosition, "frontWall");
                             DivideWall(rooms[j].roomObject.transform.Find("backWall"), DoorPosition, "backWall");*/
                             CreateDoor(DoorPosition, doorWidth, false, "Door");
+                           
                         }
                     }
                     //下方相邻
@@ -557,6 +636,7 @@ public class BuildingControl : MonoBehaviour
                            /* DivideWall(rooms[i].roomObject.transform.Find("frontWall"), DoorPosition, "frontWall");
                             DivideWall(rooms[j].roomObject.transform.Find("backWall"), DoorPosition, "backWall");*/
                             CreateDoor(DoorPosition, doorWidth, false, "Door");
+                            
                         }
                         else if (rooms[j].ZXposition.x < rooms[i].ZXposition.x + rooms[i].width && rooms[j].ZXposition.x + rooms[j].width > rooms[i].ZXposition.x + rooms[i].width && rooms[i].ZXposition.x + rooms[i].width - rooms[j].ZXposition.x >= 0.2)
                         {
@@ -565,7 +645,6 @@ public class BuildingControl : MonoBehaviour
                            /* DivideWall(rooms[i].roomObject.transform.Find("frontWall"), DoorPosition, "frontWall");
                             DivideWall(rooms[j].roomObject.transform.Find("backWall"), DoorPosition, "backWall");*/
                             CreateDoor(DoorPosition, doorWidth, false, "Door");
-
                         }
                         else if (rooms[j].ZXposition.x >= rooms[i].ZXposition.x && rooms[j].ZXposition.x + rooms[j].width <= rooms[i].ZXposition.x + rooms[i].width && rooms[j].width >= 0.2)
                         {
@@ -574,6 +653,7 @@ public class BuildingControl : MonoBehaviour
                            /* DivideWall(rooms[i].roomObject.transform.Find("frontWall"), DoorPosition, "frontWall");
                             DivideWall(rooms[j].roomObject.transform.Find("backWall"), DoorPosition, "backWall");*/
                             CreateDoor(DoorPosition, doorWidth, false, "Door");
+                          
                         }
                         else if (rooms[j].ZXposition.x < rooms[i].ZXposition.x && rooms[j].ZXposition.x + rooms[j].width > rooms[i].ZXposition.x + rooms[i].width && rooms[i].width >= 0.2)
                         {
@@ -581,9 +661,8 @@ public class BuildingControl : MonoBehaviour
                             DoorPosition = new Vector3((rooms[j].ZXposition.x + rooms[j].width + rooms[i].ZXposition.x) / 2, y / 2, rooms[i].ZXposition.z);
                             /*DivideWall(rooms[i].roomObject.transform.Find("frontWall"), DoorPosition, "frontWall");
                             DivideWall(rooms[j].roomObject.transform.Find("backWall"), DoorPosition, "backWall");*/
-                            CreateDoor(DoorPosition, doorWidth, false, "Door");
+                            CreateDoor(DoorPosition, doorWidth, false, "Door"  );
                         }
-
                     }
                 }
             }
@@ -602,31 +681,38 @@ public class BuildingControl : MonoBehaviour
         CreateDoor(RightDoorPosition, 0.1f, true, "Exit");
         //创建上方的逃生门
       /*  DivideWall(EscapeRoom.roomObject.transform.Find("frontWall"), FrontDoorPosition, "frontWall");*/
-        CreateDoor(FrontDoorPosition, 0.1f, false, "Exit");
-       
+       /* CreateDoor(FrontDoorPosition, 0.1f, false, "Exit");*/
         //Transform child = transform.Find("ChildName");
     }
     void CreateDoor(Vector3 position, float width,  bool isHorizontal, String Tag)
         {//参数依次是 门的位置，门的宽度，门如何摆放，门的标签，门的高度默认是全局变量中的 y 值
-            // 创建一个新的立方体（门），并将其设置为触发器
-            GameObject door = GameObject.CreatePrimitive(PrimitiveType.Cube);
+         // 创建一个新的立方体（门），并将其设置为触发器
+         //添加门的脚本,并执行相应的初始化函数
+        GameObject door = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        door.transform.parent =ParentObject.transform;
             door.GetComponent<BoxCollider>().isTrigger = true;
+            DoorControl thisDoor =  door.AddComponent<DoorControl>();
+           
+        // 设置门的名称和标签
+        if (Tag == "Door")
+        {
+            door.name = Tag + doorNum;
+            doorNum++;
+        }
+        else { door.name = Tag; }
+            door.tag = Tag;
            // 将门添加到待删除列表中
             AddObjectToList(door);
-           // 设置门的名称和标签
-            door.name = Tag;
-            door.tag = Tag;
-
-            // 设置门的位置
-            door.transform.position =new Vector3(position.x,position.y,position.z);
+           // 设置门的位置
+        door.transform.position =new Vector3(position.x,position.y,position.z);
 
             // 判断是否是横向门
             if (isHorizontal)
             {
                 // 如果是横向门，设置门的大小
                 // 0.3f 是门的厚度，y-1 是门的高度，1f 是门的宽度
-                door.transform.localScale = new Vector3(0.4f,3 , doorWidth);
-
+                door.transform.localScale = new Vector3(0.4f,3.2f , doorWidth);
+                thisDoor.doorDirection = "Horizontal";
                // 设置门的颜色
                if (Tag == "Exit"){
                 door.GetComponent<Renderer>().material= Exit;  // 绿色
@@ -639,8 +725,8 @@ public class BuildingControl : MonoBehaviour
             {
                 // 如果是竖向门，设置门的大小
                 // 1f 是门的宽度，y-1 是门的高度，0.3f 是门的厚度
-                door.transform.localScale = new Vector3(doorWidth, 3, 0.4f);
-
+                door.transform.localScale = new Vector3(doorWidth, 3.2f, 0.4f);
+                thisDoor.doorDirection = "Vertical";
             // 设置门的颜色
             if (Tag == "Exit")
             {
@@ -650,7 +736,8 @@ public class BuildingControl : MonoBehaviour
             {
                 door.GetComponent<Renderer>().material = Door;  // 白色
             }
-        }    
+            }
+            thisDoor.AddNavMeshLink();
         }
     void DivideWall(Transform wall,Vector3 DoorPosition, String WallName)
     { //划分墙壁，将墙壁分为两部分，将门的部位留出来，根据墙壁的名字来决定如何划分

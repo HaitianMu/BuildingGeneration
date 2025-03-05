@@ -1,0 +1,47 @@
+{
+    "RobotBrain": {
+        "checkpoints": [
+            {
+                "steps": 4963,
+                "file_path": "results\\Train_V3.0\\RobotBrain\\RobotBrain-4963.onnx",
+                "reward": 135.17337900735438,
+                "creation_time": 1740992793.4325216,
+                "auxillary_file_paths": [
+                    "results\\Train_V3.0\\RobotBrain\\RobotBrain-4963.pt"
+                ]
+            },
+            {
+                "steps": 9965,
+                "file_path": "results\\Train_V3.0\\RobotBrain\\RobotBrain-9965.onnx",
+                "reward": 129.35290189577347,
+                "creation_time": 1740992826.2673316,
+                "auxillary_file_paths": [
+                    "results\\Train_V3.0\\RobotBrain\\RobotBrain-9965.pt"
+                ]
+            },
+            {
+                "steps": 12490,
+                "file_path": "results\\Train_V3.0\\RobotBrain\\RobotBrain-12490.onnx",
+                "reward": 109.64155986309052,
+                "creation_time": 1740992844.6645029,
+                "auxillary_file_paths": [
+                    "results\\Train_V3.0\\RobotBrain\\RobotBrain-12490.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 12490,
+            "file_path": "results\\Train_V3.0\\RobotBrain.onnx",
+            "reward": 109.64155986309052,
+            "creation_time": 1740992844.6645029,
+            "auxillary_file_paths": [
+                "results\\Train_V3.0\\RobotBrain\\RobotBrain-12490.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "0.30.0",
+        "torch_version": "1.8.2+cu111"
+    }
+}

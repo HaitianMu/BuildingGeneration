@@ -60,7 +60,7 @@ public class MultiAgent : Agent
     private const float HumanHealthDecayRate = 0.01f;
     //当前楼层人数
     public int floor_human;
-
+    int previousActiveHumanCount;
     private void FixedUpdate()
     {
 
@@ -108,11 +108,10 @@ public class MultiAgent : Agent
         }
     }//定帧更新
 
-
-
     /*private void Awake()*///awake函数执行在start函数之前。
     public override void Initialize()
     {
+        Debug.Log("我是初始化函数，我执行了!");
         // 激活 robot,并将机器人设置为工作状态，这样人类才会进行跟随
         robot.SetActive(true);
         robot.GetComponent<Robot>().isRunning = true;
@@ -126,21 +125,26 @@ public class MultiAgent : Agent
         mileageCounter = 0;
         mileageRecorder = new Vector3();
         originFloor = currentFloor;
-
-        // 输出初始化信息
-       /* Debug.Log("Robot initialized at position: " + robot.transform.position);
-        Debug.Log("myEnv: " + myEnv.gameObject.name);
-
-        // 打印 personList 和 robot 信息
         foreach (Person human in myEnv.personList)
         {
-            Debug.Log("Human: " + human.transform.name);
+            if (human.isActiveAndEnabled)
+            {
+                previousActiveHumanCount++;
+            }
         }
-        Debug.Log("Robot: " + robot.transform.name);
-        Debug.Log("myEnv.useRobot " + myEnv.useRobot);//myEnv.isTraining
-        Debug.Log("myEnv.isTraining " + myEnv.isTraining);*/
-    }
+        // 输出初始化信息
+        /* Debug.Log("Robot initialized at position: " + robot.transform.position);
+         Debug.Log("myEnv: " + myEnv.gameObject.name);
 
+         // 打印 personList 和 robot 信息
+         foreach (Person human in myEnv.personList)
+         {
+             Debug.Log("Human: " + human.transform.name);
+         }
+         Debug.Log("Robot: " + robot.transform.name);
+         Debug.Log("myEnv.useRobot " + myEnv.useRobot);//myEnv.isTraining
+         Debug.Log("myEnv.isTraining " + myEnv.isTraining);*/
+    }
     public override void CollectObservations(VectorSensor sensor)
     {
         //在RequestDecision函数执行后，会先执行该函数来收集环境观测值
@@ -171,9 +175,8 @@ public class MultiAgent : Agent
             num++;
         }
 
-       // Debug.Log("Total observations added: " + num);
+       // Debug.Log("Total observations added: " + RoomNum);
     }
-
     public override void OnActionReceived(ActionBuffers actions)
     {
         if (myEnv.useRobot is false)
@@ -183,32 +186,76 @@ public class MultiAgent : Agent
 
         MoveAgent(actions);  // 移动Agent
 
+
+
         // 1. 任务完成奖励
         if (floor_human == 0)
         {
-            AddReward(10f);  // 完成任务奖励
+            AddReward(100f);  // 完成任务奖励，这个无论如何都会完成，有必要添加这个奖励吗？
             EndEpisode();
             return;
         }
 
-        // 2. 引导奖励：当机器人接近人类时
+        // 2. 引导奖励：当机器人目前没有人类跟随时，使机器人接近距离自己最远的人类时，给予一定奖励
+        float distanceToHuman = 0f;
         foreach (Person human in myEnv.personList)
         {
-            float distanceToHuman = Vector3.Distance(robot.transform.position, human.transform.position);
-            if (distanceToHuman < 5f)
+            if (human.isActiveAndEnabled)
             {
-                AddReward(0.1f);  // 接近人类奖励
+                Vector3 humanPosition = human.transform.position - new Vector3(0, 0.5f, 0);
+                if (Vector3.Distance(humanPosition, robot.transform.position) > distanceToHuman)
+                {
+                    distanceToHuman = Vector3.Distance(humanPosition, robot.transform.position);
+                }
             }
         }
 
-        // 3. 跟随奖励：当人类开始跟随机器人时
-        if (robotInfo.robotFollowerCounter > 0)
+        if (robot.GetComponent<Robot>().myDirectFollowers.Count == 0&& distanceToHuman < 10f)
         {
-            AddReward(0.2f);  // 每有一个跟随者，给予奖励
+            //Debug.Log("当前距离最远人类：" + distanceToHuman + "  米");
+            float totalReward = 0;
+            totalReward+= 0.5f * (10f - distanceToHuman); // 距离越近，奖励越高
+            AddReward(totalReward);
         }
 
-        // 4. 时间惩罚：鼓励尽快完成任务
-        AddReward(-0.01f * Time.deltaTime);
+        //3.当有人类跟随机器人时，机器人接近出口时，给予奖励
+        float distanceToExit = 100f;
+        foreach (GameObject Exit in myEnv.Exits)
+        {
+            //Debug.Log("出口的位置在："+Exit.transform.position);
+                Vector3 ExitPosition = Exit.transform.position - new Vector3(0, 0.5f, 0);
+                  distanceToExit = Vector3.Distance(ExitPosition, robot.transform.position);
+            //Debug.Log("当前距离出口：" + distanceToExit + "  米");
+        }
+        if (robot.GetComponent<Robot>().myDirectFollowers.Count > 0 && distanceToExit<10) {
+            float BaseReward = 0.5f;
+            float totalReward = 0;
+            totalReward += BaseReward  *(10f - distanceToExit); 
+            // 距离越近，奖励越高,距离越远，奖励越低，甚至会有惩罚
+            AddReward(totalReward);
+        }
+
+
+
+       /* //4. 逃生奖励：人类逃生越快，奖励越高
+        int currentActiveHumanCount = 0; 
+        foreach (Person human in myEnv.personList)
+        {
+            if (human.isActiveAndEnabled)
+            {
+                currentActiveHumanCount++;
+            } 
+        }
+        int escapedHumanCount = previousActiveHumanCount - currentActiveHumanCount;
+        Debug.Log("上一帧的场景人数为" +previousActiveHumanCount);
+        Debug.Log("当前帧的人数为" + currentActiveHumanCount);
+        Debug.Log("当前帧逃生的人数为"+escapedHumanCount);
+        if (escapedHumanCount > 0)
+        {
+            AddReward(CalculateEscapeReward(escapedHumanCount));
+        }
+        //但目前是拖得时间越长奖励反而越高，很不合理*/
+
 
         // 5. 无效动作惩罚
         if (IsIrrelevantMove(actions))
@@ -256,58 +303,51 @@ public class MultiAgent : Agent
         SetReward(timePenalty);
     } //奖励函数V1.0*/
 
-    //定义无效动作，以给予机器人惩罚
+    //奖励相关的函数、、、、、、、、、、、、、、、、、、
     private bool IsIrrelevantMove(ActionBuffers actions)
     {
-        // 假设 actions 包含两个主要部分：移动方向和速度
-        var moveDirection = actions.ContinuousActions[0]; // 假设第一个连续动作是水平移动（-1到1）
-        var moveSpeed = actions.ContinuousActions[1]; // 假设第二个连续动作是移动速度（0到1）
+        // 获取归一化的目标坐标
+        float targetX = Mathf.Clamp(actions.ContinuousActions[0], -1, 1) * 5.0f + 5f;
+        float targetZ = Mathf.Clamp(actions.ContinuousActions[1], -1, 1) * 5.0f + 5f;
 
-        // 如果机器人不移动，认为是无效动作
-        if (moveDirection == 0f && moveSpeed == 0f)
+        // 计算目标位置
+        Vector3 targetPosition = new Vector3(targetX, transform.position.y, targetZ);
+
+        //  如果目标位置与当前位置几乎相同，移动距离过小，认为是无效动作
+        if (Vector3.Distance(transform.position, targetPosition) < 0.2f)
         {
-            return true;  // 没有任何有效移动
+            //Debug.Log("本动作是无效动作");
+            return true; // 目标位置与当前位置几乎重合，无效动作
         }
 
-        // 如果机器人没有实际移动，比如向原地移动或者速度为0的情况下认为是无效
-        if (Mathf.Abs(moveDirection) < 0.01f && Mathf.Abs(moveSpeed) < 0.01f)
-        {
-            return true;  // 动作过于微小，几乎没有效果
-        }
-
-        // 如果机器人朝向一个障碍物（可以通过环境判断障碍物方向来判断）或者不可达的地方移动
-        // 假设我们有一个函数可以检测目标位置是否被障碍物阻挡
-        Vector3 newPosition = transform.position + new Vector3(moveDirection, 0f, 0f); // 假设是2D移动
-        if (IsBlocked(newPosition))  // 判断新的目标位置是否被障碍物阻挡
-        {
-            return true;  // 向障碍物方向移动，无意义
-        }
-
-        return false;  // 如果没有无效动作，返回 false
+        return false; // 如果没有无效动作，返回 false
     }
-
-    // 判断新位置是否被障碍物阻挡
-    private bool IsBlocked(Vector3 targetPosition)
+    private float CalculateEscapeReward(int escapedHumanCount)
     {
-        // 你可以使用射线检测来判断目标位置是否被障碍物阻挡
-        RaycastHit hit;
-        if (Physics.Raycast(targetPosition, Vector3.forward, out hit))
-        {
-            if (hit.collider != null && hit.collider.CompareTag("Obstacle"))
-            {
-                return true;  // 被障碍物阻挡
-            }
-        }
-        return false;
+        // 基础奖励：每逃生一个人给予 1 分
+        float baseReward = escapedHumanCount * 50.0f;
+
+        // 时间因子：逃生越快，奖励越高
+        float timeFactor = Mathf.Clamp(1.0f - Time.timeSinceLevelLoad / 100f, 0.1f, 1.0f);
+
+        return baseReward * timeFactor;
     }
 
-
+    //奖励相关的函数、、、、、、、、、、、、、、、、、、
     public override void OnEpisodeBegin()
     {
         ResetAgent();//重置智能体
         Debug.Log("重置机器人");
         myEnv.ResetAllHumans();//重置所有人类
         Debug.Log("重置所有人类");
+        previousActiveHumanCount = 0;
+        foreach (Person human in myEnv.personList)
+        {
+            if (human.isActiveAndEnabled)
+            {
+                previousActiveHumanCount++;
+            }
+        }
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
@@ -378,8 +418,8 @@ public class MultiAgent : Agent
         robotPosition.y = 0.5f + 4 * (currentFloor - 1);
         Vector3 positionExit = GetCrossDoorDestination(myEnv.Exits[0].gameObject); ;
 
-        float targetX = Mathf.Clamp(continuousActions[0], -1, 1) * 5.0f+10f;
-        float targetZ = Mathf.Clamp(continuousActions[1], -1, 1) * 5.0f+10f;
+        float targetX = Mathf.Clamp(continuousActions[0], -1, 1) * 5.0f+5f;
+        float targetZ = Mathf.Clamp(continuousActions[1], -1, 1) * 5.0f+5f;
         
         Vector3 targetPosition = new(targetX, 0.5f, targetZ);
         //Debug.Log("机器人的目的地为：" +targetPosition );

@@ -3,35 +3,28 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using Unity.AI.Navigation;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class ComplexityControl : MonoBehaviour
 {
     // Start is called before the first frame update
-   
-  
     public float MINROOMAREA = 5f; //最小的房间面积
-
-   
-    // 用于存储输入的数字
-   
-
     public BuildingControl buildingGeneration;  // 引用 BuildingGeneratiion 脚本
-
-    // 按钮点击事件处理函数
-
     private float timer = 0f; // 计时器
     private const float interval = 1f; // 间隔时间（1 秒）
-
+    public NavMeshSurface surface;//生成导航的组件
     void Update()
     {
+       
         // 每帧更新计时器
         timer += Time.deltaTime;
 
         // 如果计时器达到 1 秒
-        if (timer >= interval)
+        if (timer >=interval)
         {
+            Debug.Log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             // 重置计时器
             timer = 0f;
 
@@ -39,26 +32,29 @@ public class ComplexityControl : MonoBehaviour
             float number1 = 900; // 整个区域的面积
             int number2 = UnityEngine.Random.Range(5, 21); // 划分的房间数量
             BeginGeneration(number1, number2);
+            surface.BuildNavMesh();
         }
     }
 
-    public void BeginGeneration(float number1, int number2) //设置为public，以对外界可见，将该函数与按钮的onclick（）相关联，表示点击按钮即触发这个函数
+    public void BeginGeneration(float number1, int number2) 
     {
        
             if (number2 > 0)
             {
                 float[] result = DivideNumberRandomly(number1, number2);
 
-                //调试代码
-                /*// 输出结果
-                foreach (float part in result)
-                {
-                    Debug.Log("（随机数生成）随机划分区域大小的结果： " + part);
-                }*/
+            //调试代码
+            /*// 输出结果
+            foreach (float part in result)
+            {
+                Debug.Log("（随机数生成）随机划分区域大小的结果： " + part);
+            }*/
 
-                // 将划分结果传递给 BuildingGeneratiion
-                buildingGeneration.roomAreas = result; // 设置房间面积数组
-                buildingGeneration.GenerateRooms();  // 调用房间生成方法
+            // 将划分结果传递给 BuildingGeneratiion
+
+            buildingGeneration.ClearPreviousRooms();
+            buildingGeneration.roomAreas = result; // 设置房间面积数组
+            buildingGeneration.GenerateRooms();  // 调用房间生成方法
             }
             else
             {

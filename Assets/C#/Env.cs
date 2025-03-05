@@ -51,9 +51,7 @@ public partial class Env : MonoBehaviour
     public int fire_human_count;///ADD
     public double Eva;//ADD
     //public double frontE = 0;//ADD
-    public float Htimer;//ADD剩余时间计数
-    public float Hhpgeter;//ADD剩余血量计数
-    public int Human_Eva;//ADD Human_Eva人类存活
+   
 
 
     private void Start()
