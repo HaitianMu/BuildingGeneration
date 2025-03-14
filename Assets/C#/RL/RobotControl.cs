@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class Robot : MonoBehaviour
+public class RobotControl : MonoBehaviour
 {
     public string robotCommand;
-    public List<Person> myDirectFollowers;
+    public List<HumanControl> myDirectFollowers;
     public int robotFollowerCounter;
-    public MultiAgent myAgent;
+    public RobotBrain myAgent;
     // bot的NavMeshAgent组件
     private NavMeshAgent _botNavMeshAgent;
     public bool isRunning;//机器人是否处于工作状态
@@ -17,7 +17,7 @@ public class Robot : MonoBehaviour
     {
         this.gameObject.SetActive(true);
         isRunning = false;//机器人默认为不工作
-        myDirectFollowers = new List<Person>();
+        myDirectFollowers = new List<HumanControl>();
         _botNavMeshAgent = GetComponent<NavMeshAgent>();
     }
 

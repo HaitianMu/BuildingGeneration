@@ -12,10 +12,10 @@ public class ComplexityControl : MonoBehaviour
     // Start is called before the first frame update
     public float MINROOMAREA = 5f; //最小的房间面积
     public BuildingControl buildingGeneration;  // 引用 BuildingGeneratiion 脚本
-    private float timer = 0f; // 计时器
-    private const float interval = 1f; // 间隔时间（1 秒）
     public NavMeshSurface surface;//生成导航的组件
-    void Update()
+    public GameObject HumanList;
+    public GameObject HumanPrefab;
+   /* void Update()
     {
        
         // 每帧更新计时器
@@ -31,14 +31,18 @@ public class ComplexityControl : MonoBehaviour
             // 生成随机数并调用 BeginGeneration
             float number1 = 900; // 整个区域的面积
             int number2 = UnityEngine.Random.Range(5, 21); // 划分的房间数量
-            BeginGeneration(number1, number2);
-            surface.BuildNavMesh();
-        }
-    }
 
-    public void BeginGeneration(float number1, int number2) 
+            BeginGeneration(number1, number2);//生成环境后
+
+            surface.BuildNavMesh();//生成导航
+
+            SetHuman();//放置人类
+
+        }
+    }*/
+
+    public void BeginGenerationFangTree(float number1, int number2) 
     {
-       
             if (number2 > 0)
             {
                 float[] result = DivideNumberRandomly(number1, number2);
@@ -54,16 +58,29 @@ public class ComplexityControl : MonoBehaviour
 
             buildingGeneration.ClearPreviousRooms();
             buildingGeneration.roomAreas = result; // 设置房间面积数组
-            buildingGeneration.GenerateRooms();  // 调用房间生成方法
+            buildingGeneration.GenerateRoomsFang();  // 调用房间生成方法
             }
             else
             {
                 Debug.LogError("划分的数量必须>=1");
             }
-        
-       
     }
 
+
+    public void BeginGenerationBinary(float number1, int number2)
+    {
+
+        Debug.Log("BeginGenerationBinary");
+        if (number2 > 0)
+        {
+            buildingGeneration.ClearPreviousRooms();
+            buildingGeneration.GenerateRoomsBinary(number1,number2);  // 调用房间生成方法
+        }
+        else
+        {
+            Debug.LogError("划分的数量必须>=1");
+        }
+    }
     // 随机将 number1 划分为 number2 个部分
     //采用平滑分配策略：每个房间的基础面积 baseArea 被均匀计算为总面积除以房间数量。然后在此基础上应用随机的调整值，确保分配相对平衡。
     //波动范围：：波动范围 maxAdjustment 被设置为剩余面积的一半（remaining / 2f），这样可以避免极端的随机变化。并且通过 rand.NextDouble() 控制波动的幅度
@@ -121,4 +138,21 @@ public class ComplexityControl : MonoBehaviour
         return result;
 
     }
+
+    //随机位置生成10个人类，
+    /*public void SetHuman()
+    {
+        //
+        HumanList = GameObject.Find("HumanList");
+        
+        for (int i = 0; i < 10; i++)
+        {
+            float randomX = UnityEngine.Random.Range(1f, buildingGeneration.totalWidth);
+            float randomZ = UnityEngine.Random.Range(1f, buildingGeneration.totalHeight);
+            GameObject Person=  Instantiate(HumanPrefab,new Vector3(randomX,0.5f,randomZ), Quaternion.identity);
+           Person.transform.parent = HumanList.transform;
+        }
+    }*/
+
+
 }
