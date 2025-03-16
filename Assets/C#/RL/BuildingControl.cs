@@ -15,7 +15,7 @@ public partial class BuildingControl : MonoBehaviour
 
 
     public float[] roomAreas;// 输入的房间面积数组（已知数组）
-    public int RoomNum = 1;//记录已经生成的房间数量,用于给房间编号  
+    public int RoomNum = 0;//记录已经生成的房间数量,用于给房间编号  
     public int doorNum = 1;//记录已经生成的门数量,用于给门编号
     float y = 3.0f;//墙体的高度 ,
     float doorWidth = 1.5f;//门的宽度
@@ -56,15 +56,12 @@ public partial class BuildingControl : MonoBehaviour
             roomSize = roomsize;
         }
         // 计算房间的对角线长度（权重）
-        public float DiagonalLength()
-        {
-            return Mathf.Sqrt(width * width + height * height);
-        }
+        
         // 方法：检查与另一个房间是否相邻（基于房间位置和大小）
         public bool IsAdjacentTo(Room other)  //判断该房间是否与另外一个房间相邻,当两个房间相邻的长度大于Distance时，我们才认为这两个房间相邻
         {
             // 假设房间是矩形的，我们检查是否有一个相邻的面
-            float Distance = 2.0f; 
+            float Distance = 5.0f; 
             bool isAdjacent = false;
 
             // 检查左右相邻（假设x为水平方向，y为垂直方向，z为深度方向）

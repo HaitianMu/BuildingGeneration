@@ -249,26 +249,24 @@ public partial class HumanControl: MonoBehaviour
         {
             layer = "Robot";
         }
-
-        foreach (Vector3 vision in GetVision(visionWidth, visionDiff))
-        {
-            // 从当前位置向视线方向发射射线
-            if (Physics.Raycast(myPosition, vision, out RaycastHit hit, visionLimit, LayerMask.GetMask(layer)))
+            foreach (Vector3 vision in GetVision(visionWidth, visionDiff))
             {
-                // 如果射线击中的对象的标签在目标标签列表中，并且该对象不在候选列表中，则添加到候选列表
-                if (targetTags.Contains(hit.transform.tag) && !candidateList.Contains(hit.transform.gameObject))
-                   // print("扫描到的门有："+hit.transform.gameObject.name);
-                    candidateList.Add(hit.transform.gameObject);
+                // 从当前位置向视线方向发射射线
+                if (Physics.Raycast(myPosition, vision, out RaycastHit hit, visionLimit, LayerMask.GetMask(layer)))
+                {
+                    // 如果射线击中的对象的标签在目标标签列表中，并且该对象不在候选列表中，则添加到候选列表
+                    if (targetTags.Contains(hit.transform.tag) && !candidateList.Contains(hit.transform.gameObject))
+                        // print("扫描到的门有："+hit.transform.gameObject.name);
+                        candidateList.Add(hit.transform.gameObject);
+                }
+                else
+                {
+                    // 如果射线没有击中任何对象，则将该方向添加到未知方向列表
+                    //print("没有扫描到物体");
+                    unknownDirections.Add(vision);
+                    // print("扫描到的未知方向有：" + vision);
+                }
             }
-            else
-            {
-                // 如果射线没有击中任何对象，则将该方向添加到未知方向列表
-                 //print("没有扫描到物体");
-                unknownDirections.Add(vision);
-                // print("扫描到的未知方向有：" + vision);
-            }
-        }
-
         //RbtList = candidateList;
         // 返回候选对象列表和未知方向列表
         return Tuple.Create(candidateList, unknownDirections);

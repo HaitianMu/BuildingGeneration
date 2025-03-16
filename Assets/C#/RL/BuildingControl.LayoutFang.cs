@@ -255,7 +255,8 @@ public partial class BuildingControl : MonoBehaviour
         // 创建四面墙体：四个方向
         // 1. 左墙
         GameObject leftWall = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        leftWall.layer = LayerMask.NameToLayer("Wall");
+        leftWall.tag = "Wall";
+        leftWall.layer = LayerMask.NameToLayer("Robot");
         leftWall.name = "leftWall";
         leftWall.transform.parent = room.transform;
         leftWall.transform.position = new Vector3(x + wallThickness / 2, y / 2, z + height / 2);
@@ -266,27 +267,30 @@ public partial class BuildingControl : MonoBehaviour
         // 2. 右墙
         GameObject rightWall = GameObject.CreatePrimitive(PrimitiveType.Cube);
         rightWall.name = "rightWall";
+        rightWall.tag = "Wall";
         rightWall.transform.parent = room.transform;
         rightWall.transform.position = new Vector3(x + width - wallThickness / 2, y / 2, z + height / 2);
         rightWall.transform.localScale = new Vector3(wallThickness, y, height);
         rightWall.GetComponent<Renderer>().material = Wall; // 墙壁颜色
-        rightWall.layer = LayerMask.NameToLayer("Wall"); ;
+        rightWall.layer = LayerMask.NameToLayer("Robot"); ;
         // 3. 后墙
         GameObject frontWall = GameObject.CreatePrimitive(PrimitiveType.Cube);
         frontWall.name = "backWall";
+        frontWall.tag = "Wall";
         frontWall.transform.parent = room.transform;
         frontWall.transform.position = new Vector3(x + width / 2, y / 2, z + wallThickness / 2);
         frontWall.transform.localScale = new Vector3(width, y, wallThickness);
         frontWall.GetComponent<Renderer>().material = Wall; // 墙壁颜色
-        frontWall.layer = LayerMask.NameToLayer("Wall"); ;
+        frontWall.layer = LayerMask.NameToLayer("Robot"); ;
         // 4. 前墙
         GameObject backWall = GameObject.CreatePrimitive(PrimitiveType.Cube);
         backWall.name = "frontWall";
+        backWall.tag = "Wall";
         backWall.transform.parent = room.transform;
         backWall.transform.position = new Vector3(x + width / 2, y / 2, z + height - wallThickness / 2);
         backWall.transform.localScale = new Vector3(width, y, wallThickness);
         backWall.GetComponent<Renderer>().material = Wall; // 墙壁颜色
-        backWall.layer = LayerMask.NameToLayer("Wall"); ;
+        backWall.layer = LayerMask.NameToLayer("Robot"); ;
     }
     public void AddObjectToList(GameObject room)// 将生成的房间添加到房间列表
     {

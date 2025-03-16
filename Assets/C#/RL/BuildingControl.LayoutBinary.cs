@@ -39,18 +39,18 @@ public partial class BuildingControl : MonoBehaviour
     private void CreateRoomRectBinary(Room room) {
         if (roomList.Count >= roomNum)//终止函数
         {
-            Debug.Log("数组中的房间数量为：" + roomList.Count + ",需要生成的房间数量为：" + roomNum+"。生成完毕");
+           // Debug.Log("数组中的房间数量为：" + roomList.Count + ",需要生成的房间数量为：" + roomNum+"。生成完毕");
             return;
         }
         // 选择分割方向
         bool splitVertical; // 随机选择垂直或水平分割
                             // 如果宽度大于高度，优先垂直分割
-        if (room.width > 1.5*room.height)
+        if (room.width > 2*room.height)
         {
             splitVertical = true;
         }
         // 如果高度大于宽度，优先水平分割
-        else if (room.height > 1.5*room.width)
+        else if (room.height > 2*room.width)
         {
             splitVertical = false;
         }
@@ -191,11 +191,11 @@ public partial class BuildingControl : MonoBehaviour
     /// <returns>符合要求的分割点；如果未找到，返回 -1</returns>
     private float FindValidSplit(float minSplit, float maxSplit, float roomWidth, float roomHeight)
     {
-        int maxAttempts = 1000; // 最大尝试次数
+        int maxAttempts = 2000; // 最大尝试次数
         int attempts = 0;
 
         // 初始长宽比限制
-        float minAspectRatio = 0.618f; // 1/4
+        float minAspectRatio = 0.618f; // 
         float maxAspectRatio = 1.618f;    // 4
 
         do
@@ -210,11 +210,11 @@ public partial class BuildingControl : MonoBehaviour
             attempts++;
 
             // 每 100 次尝试后放宽限制
-            if (attempts % 100 == 0 && attempts > 0)
+            if (attempts % 1000== 0 && attempts > 0)
             {
-                minAspectRatio *= 0.7f; // 放宽下限
-                maxAspectRatio *= 1.4f; // 放宽上限
-                Debug.Log($"尝试 {attempts} 次未成功，放宽长宽比限制为 {minAspectRatio} 到 {maxAspectRatio}");
+                minAspectRatio *= 0.8f; // 放宽下限
+                maxAspectRatio *= 1.2f; // 放宽上限
+              //  Debug.Log($"尝试 {attempts} 次未成功，放宽长宽比限制为 {minAspectRatio} 到 {maxAspectRatio}");
             }
 
             // 检查长宽比是否符合要求
@@ -228,7 +228,7 @@ public partial class BuildingControl : MonoBehaviour
 
         // 如果未找到符合要求的分割点，返回 -1
 
-        Debug.Log("没有找到理想的分割点，返回随机值");
+        //Debug.Log("没有找到理想的分割点，返回随机值");
         return UnityEngine.Random.Range(minSplit, maxSplit);
     }
 

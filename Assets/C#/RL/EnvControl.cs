@@ -42,72 +42,62 @@ public partial class EnvControl : MonoBehaviour
     private const float interval = 1f; // 间隔时间（1 秒）
 
 
-    /*private void Start()
+    private void Start()
     {
-        //print("Env环境初始化脚本开始了");
-        //生成环境，环境的父物体是Env的子物体：Buildin。生成的环境包括地板的NavMeshModified和门的NavMeshLink
-
-        *//* int number1 = UnityEngine.Random.Range(100, 1000);
-         int number2 = UnityEngine.Random.Range(5, 10); // 划分的房间数量*//*
-
-        int number1 = 900;
-        int number2 =10; // 划分的房间数量
-        *//*  complexityControl.BeginGenerationFangTree(number1, number2);//方形树图发生成房间布局*//*
-
-        complexityControl.BeginGenerationBinary(number1,number2);
-*//*        surface.BuildNavMesh();//生成导航
-                               //AddRobot();
-        AddPerson(10);
-
-        foreach (HumanControl human in personList)//统计当前楼层的人数
-        {
-            if (human.isActiveAndEnabled)
-            {
-                currentFloorhuman++;
-            }
-            Debug.Log(currentFloorhuman);
-        }
-
-        AddExits();
-        CleanTheScene();*//*
-
-    }*/
 
 
 
-    /*private void Update()
-    {
-        // 每帧更新计时器
-        timer += Time.deltaTime;
-
-        // 如果计时器达到 1 秒
-        if (timer >= interval)
-        {
-            int number1 = 900;
-            int number2 = 10; // 划分的房间数量
-            *//*  complexityControl.BeginGenerationFangTree(number1, number2);//方形树图发生成房间布局*//*
-
+            /*int number1 = 900;
+            int number2 = UnityEngine.Random.Range(8, 15); // 划分的房间数量
             timer = 0f;
             complexityControl.BeginGenerationBinary(number1, number2);
-        }
-    }*/
+      */
+
+        /* //print("Env环境初始化脚本开始了");
+         //生成环境，环境的父物体是Env的子物体：Buildin。生成的环境包括地板的NavMeshModified和门的NavMeshLink
+
+         int number1 = UnityEngine.Random.Range(100, 1000);
+         int number2 = UnityEngine.Random.Range(5, 10); // 划分的房间数量
+
+         int number1 = 900;
+         int number2 = 10; // 划分的房间数量
+         complexityControl.BeginGenerationFangTree(number1, number2);//方形树图发生成房间布局
+
+         complexityControl.BeginGenerationBinary(number1, number2);
+         surface.BuildNavMesh();//生成导航
+                                //AddRobot();
+         AddPerson(10);
+
+         foreach (HumanControl human in personList)//统计当前楼层的人数
+         {
+             if (human.isActiveAndEnabled)
+             {
+                 currentFloorhuman++;
+             }
+             Debug.Log(currentFloorhuman);
+         }
+
+         AddExits();
+         CleanTheScene();*/
+
+    }
 
 
     private void Update()
     {
 
         // 每帧更新计时器,这一部分用于生成场景展示
-        /* timer += Time.deltaTime;
+        /*timer += Time.deltaTime;
 
-         // 如果计时器达到 1 秒
-         if (timer >= interval)
-         {
-             int number1 = 900;
-             int number2 = UnityEngine.Random.Range(8, 15); // 划分的房间数量
-             complexityControl.BeginGenerationBinary(number1, number2);
-           *//*  surface.BuildNavMesh();//生成导航*//*
-             timer = 0f;
-         }*/
+        // 如果计时器达到 1 秒
+        if (timer >= interval)
+        {
+            int number1 = 900;
+            int number2 = UnityEngine.Random.Range(8, 15); // 划分的房间数量
+            complexityControl.BeginGenerationBinary(number1, number2);
+            surface.BuildNavMesh();//生成导航
+            timer = 0f;
+        }*/
 
         // ！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！ 这一部分是整个流程演示
         if (isTraining != true)
@@ -115,8 +105,8 @@ public partial class EnvControl : MonoBehaviour
             if (currentFloorhuman == 0)
             {
                 CleanTheScene();
-                int number2 = UnityEngine.Random.Range(5, 10); // 划分的房间数量
-                complexityControl.BeginGenerationBinary(400, number2);
+                int number2 = UnityEngine.Random.Range(8, 15); // 划分的房间数量
+                complexityControl.BeginGenerationBinary(900, number2);
                 surface.BuildNavMesh();//生成导航
                                        //AddRobot();
                 AddPerson(10);
