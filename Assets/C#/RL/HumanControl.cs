@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
@@ -23,15 +24,21 @@ public partial class HumanControl: MonoBehaviour
     public List<GameObject> RbtList;  //发现的机器人列表
     public GameObject myLeader;//领导者目前只能是机器人 1.19
 
+
+    //奖励相关参数
+    public float health;//人类血量
+    public float DelayRate = 0.01f;//人类血量衰减速率
+
     public void Start()
     {
+        myLeader = null;
         myBehaviourMode = "Leader";
         _myNavMeshAgent = GetComponent<NavMeshAgent>();
         myDestination = new Vector3();
         _doorMemoryQueue = new Queue<GameObject>();
         myTargetDoor = null;
         lastDoorWentThrough = null;
-        
+        health = 100.0f;
     }
     private void FixedUpdate()
     {
@@ -47,19 +54,25 @@ public partial class HumanControl: MonoBehaviour
                 break;
         }
 
-      /*  foreach (Vector3 vision in GetVision(360, 5))//检查视野范围内是否有机器人
-        {
-            // 从物体位置发射射线
-            if (Physics.Raycast(transform.position, vision, out RaycastHit hit, visionLimit))//自身0.5f范围内是否有物体
-            {
-                GameObject hitObject = hit.collider.gameObject;
-                // 检查射线击中的物体是否具有特定标签
-                if (hitObject.tag == "Robot" && !RbtList.Contains(hitObject))
-                {
 
-                }
+        //在这里修改人类的生命值
+        if (health > 0)
+        {
+           health-=DelayRate;
+        }
+        else if (health <= 0)
+        {
+            if (myLeader is not null)
+            {
+                    myLeader.GetComponent<RobotControl>().myDirectFollowers.Remove(gameObject.GetComponent<HumanControl>());
             }
-        }*/
+            Debug.Log("人类死亡");
+            myEnv.BrainList[0].AddReward(-30);
+            myEnv.BrainList[0].LogReward("人类死亡惩罚", -30);
+            //TO ADD
+            gameObject.SetActive(false);
+        }
+
     }
 
     private List<Vector3> GetVision(int visionWidth, int visionDiff)//生成人类视线，本质是一个向量数组
@@ -72,7 +85,7 @@ public partial class HumanControl: MonoBehaviour
             Vector3 vision = Quaternion.AngleAxis(visionDiff * visionIndex, Vector3.up) * transform.forward;
             // 将生成的视线方向向量添加到列表中
             myVisions.Add(vision);
-            Debug.DrawRay(transform.position, vision * 0.4f, Color.green);
+            //Debug.DrawRay(transform.position, vision * 0.4f, Color.green);
             // 调试用的代码，用于在场景中绘制视线方向（可注释掉）
         }
 
@@ -101,6 +114,7 @@ public partial class HumanControl: MonoBehaviour
 
                     if (myLeader.GetComponent<RobotControl>().isRunning)
                     {//如果机器人在工作，就进行跟随
+                        myEnv.BrainList[0].AddReward(health);
                      //print("找到了在工作的机器人，我的领导者是：" + leaderCandidates[0].name);
                         if (!myLeader.GetComponent<RobotControl>().myDirectFollowers.Contains(gameObject.GetComponent<HumanControl>()))
                         {
@@ -390,10 +404,11 @@ public partial class HumanControl: MonoBehaviour
         {
             case "Door":
                 lastDoorWentThrough = triggerObject;
+
                 //print("上一扇经过的门是："+ triggerObject.name);
-                if (!_doorMemoryQueue.Contains(triggerObject))
+                if (_doorMemoryQueue.Count>0&&!_doorMemoryQueue.Contains(triggerObject))
                     _doorMemoryQueue.Enqueue(triggerObject);
-                //print(triggerObject.name + "已经被加入记忆");
+              //  print(triggerObject.name + "已经被加入记忆");
                 if (_doorMemoryQueue.Count > 4)
                     _doorMemoryQueue.Dequeue();
                 break;
@@ -402,6 +417,12 @@ public partial class HumanControl: MonoBehaviour
                 /*  myEnv.personList.Remove(this);*/
                 this.gameObject.SetActive(false);
                 myEnv.currentFloorhuman--;
+
+                //在这里给予机器人奖励
+                myEnv.BrainList[0].AddReward(health+20);
+                myEnv.BrainList[0].LogReward("单个人类逃生奖励", health + 20);
+
+
                 break;
         }
     }

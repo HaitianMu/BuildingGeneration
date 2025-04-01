@@ -15,13 +15,13 @@ public partial class BuildingControl : MonoBehaviour
     /*.....................................一、接受UI输入的区域面积和房间数目，然后进行房间的摆放和房间墙壁的生成.......................................*/
     public void GenerateRoomsBinary(float areasize,int roomnum)
     {
-       Debug.Log("开始执行二分法生成房间布局......");
+      // Debug.Log("开始执行二分法生成房间布局......");
        totalArea=areasize;
        roomNum = roomnum;
        FindBestDimensions(totalArea);//调用该函数后，得到整个区域的长和宽 totalWidth和TotalHeight（z值）
         if (roomList.Count == 0)//roomList初始化，将整个作为数组的第一个
         {
-            Debug.Log("添加第一个房间");
+           // Debug.Log("添加第一个房间");
             Room room = new Room(new Vector3(0, y / 2, 0), totalWidth, totalHeight, totalHeight * totalWidth);
             roomList.Add(room);
         }
@@ -30,7 +30,7 @@ public partial class BuildingControl : MonoBehaviour
 
         // 生成连通图
         Room[][] CN = GenerateCN(roomList.ToArray());
-       //根据连通图来生成门
+        //根据连通图来生成门
         CreateDoorBetweenRooms(roomList.ToArray(), CN); //根据连通图CN生成门
         //在右上角的房间生成门
         AddExitDoors(FindEscapeRoom());
@@ -170,7 +170,7 @@ public partial class BuildingControl : MonoBehaviour
     }
     public void CreateRoomBinary(List<Room> roomlist)
     {
-        Debug.Log("执行了在场景中创建房间的函数");
+      //  Debug.Log("执行了在场景中创建房间的函数");
         int num = 0;
         foreach (Room room in roomlist) {
              GameObject Realroom=  CreateRoomInScene(room.XZposition.x, room.XZposition.z, room.width, room.height);
@@ -210,7 +210,7 @@ public partial class BuildingControl : MonoBehaviour
             attempts++;
 
             // 每 100 次尝试后放宽限制
-            if (attempts % 1000== 0 && attempts > 0)
+            if (attempts % 2000== 0 && attempts > 0)
             {
                 minAspectRatio *= 0.8f; // 放宽下限
                 maxAspectRatio *= 1.2f; // 放宽上限
@@ -236,6 +236,7 @@ public partial class BuildingControl : MonoBehaviour
     {
         // 创建房间的主体
         GameObject room = new GameObject("Room" + RoomNum);
+        room.tag = "Room";
         room.transform.parent = ParentObject.transform;
         RoomNum++;
 
@@ -243,6 +244,7 @@ public partial class BuildingControl : MonoBehaviour
         GameObject floor = GameObject.CreatePrimitive(PrimitiveType.Cube);
         floor.AddComponent<NavMeshModifier>();
         floor.name = "floor";
+        floor.tag = "Floor";
         floor.transform.parent = room.transform;
         floor.transform.position = new Vector3(x + width / 2, 0f, z + height / 2);
         floor.transform.localScale = new Vector3(width, 0.1f, height); // 底部宽度和高度

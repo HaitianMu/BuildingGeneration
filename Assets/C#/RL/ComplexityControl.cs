@@ -70,7 +70,7 @@ public class ComplexityControl : MonoBehaviour
     public void BeginGenerationBinary(float number1, int number2)
     {
 
-        Debug.Log("BeginGenerationBinary");
+       // Debug.Log("BeginGenerationBinary");
         if (number2 > 0)
         {
             buildingGeneration.ClearPreviousRooms();

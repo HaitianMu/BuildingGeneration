@@ -78,7 +78,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 18
+    VectorObservationSize: 37
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 2
@@ -117,13 +117,6 @@ MonoBehaviour:
   robotNavMeshAgent: {fileID: 0}
   robotRigidbody: {fileID: 0}
   robotInfo: {fileID: 0}
-  navMeshAnchorPrefab: {fileID: 0}
   currentFloor: 0
-  originFloor: 0
-  decisionCountDown: 0
-  maxDecisionCountDown: 0
   stuckCounter: 0
-  mileageCounter: 0
-  mileageRecorder: {x: 0, y: 0, z: 0}
-  isTrans: 0
   floor_human: 0

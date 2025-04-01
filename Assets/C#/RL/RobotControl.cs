@@ -16,9 +16,14 @@ public class RobotControl : MonoBehaviour
     public void Start()
     {
         this.gameObject.SetActive(true);
-        isRunning = false;//机器人默认为不工作
+        isRunning = true;//机器人默认工作
         myDirectFollowers = new List<HumanControl>();
         _botNavMeshAgent = GetComponent<NavMeshAgent>();
     }
 
+    public void Update()
+    {
+        robotFollowerCounter = myDirectFollowers.Count;
+
+    }
 }

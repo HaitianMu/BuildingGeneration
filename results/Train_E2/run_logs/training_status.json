@@ -1,0 +1,740 @@
+{
+    "RobotBrain": {
+        "checkpoints": [
+            {
+                "steps": 609947,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-609947.onnx",
+                "reward": null,
+                "creation_time": 1743350564.2734258,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-609947.pt"
+                ]
+            },
+            {
+                "steps": 614948,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-614948.onnx",
+                "reward": 1383.5957300364971,
+                "creation_time": 1743350605.3588831,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-614948.pt"
+                ]
+            },
+            {
+                "steps": 619949,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-619949.onnx",
+                "reward": -161.09108704328537,
+                "creation_time": 1743350650.2917933,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-619949.pt"
+                ]
+            },
+            {
+                "steps": 624950,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-624950.onnx",
+                "reward": 346.161965534091,
+                "creation_time": 1743350689.9881194,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-624950.pt"
+                ]
+            },
+            {
+                "steps": 629985,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-629985.onnx",
+                "reward": null,
+                "creation_time": 1743350735.8497307,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-629985.pt"
+                ]
+            },
+            {
+                "steps": 634943,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-634943.onnx",
+                "reward": -361.299978017807,
+                "creation_time": 1743350775.6662161,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-634943.pt"
+                ]
+            },
+            {
+                "steps": 639944,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-639944.onnx",
+                "reward": null,
+                "creation_time": 1743350819.435293,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-639944.pt"
+                ]
+            },
+            {
+                "steps": 644945,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-644945.onnx",
+                "reward": 2199.6449328660965,
+                "creation_time": 1743350860.1005414,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-644945.pt"
+                ]
+            },
+            {
+                "steps": 649946,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-649946.onnx",
+                "reward": 824.3475669026375,
+                "creation_time": 1743350904.7688518,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-649946.pt"
+                ]
+            },
+            {
+                "steps": 654947,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-654947.onnx",
+                "reward": 1011.0437906682491,
+                "creation_time": 1743350946.030476,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-654947.pt"
+                ]
+            },
+            {
+                "steps": 659939,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-659939.onnx",
+                "reward": null,
+                "creation_time": 1743350989.4555886,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-659939.pt"
+                ]
+            },
+            {
+                "steps": 664940,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-664940.onnx",
+                "reward": 1849.8946578800678,
+                "creation_time": 1743351030.2947817,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-664940.pt"
+                ]
+            },
+            {
+                "steps": 669938,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-669938.onnx",
+                "reward": null,
+                "creation_time": 1743351073.398173,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-669938.pt"
+                ]
+            },
+            {
+                "steps": 674942,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-674942.onnx",
+                "reward": -340.29997980594635,
+                "creation_time": 1743351113.1882272,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-674942.pt"
+                ]
+            },
+            {
+                "steps": 679943,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-679943.onnx",
+                "reward": null,
+                "creation_time": 1743351153.780124,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-679943.pt"
+                ]
+            },
+            {
+                "steps": 684944,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-684944.onnx",
+                "reward": 1402.279521226883,
+                "creation_time": 1743351192.2999692,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-684944.pt"
+                ]
+            },
+            {
+                "steps": 689962,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-689962.onnx",
+                "reward": null,
+                "creation_time": 1743351230.6957605,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-689962.pt"
+                ]
+            },
+            {
+                "steps": 694938,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-694938.onnx",
+                "reward": 2004.955816268921,
+                "creation_time": 1743351266.9382308,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-694938.pt"
+                ]
+            },
+            {
+                "steps": 699938,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-699938.onnx",
+                "reward": null,
+                "creation_time": 1743351307.8504384,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-699938.pt"
+                ]
+            },
+            {
+                "steps": 704939,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-704939.onnx",
+                "reward": 1193.0594862699509,
+                "creation_time": 1743351345.3979518,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-704939.pt"
+                ]
+            },
+            {
+                "steps": 709940,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-709940.onnx",
+                "reward": 1243.8348515331745,
+                "creation_time": 1743351382.7614954,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-709940.pt"
+                ]
+            },
+            {
+                "steps": 714941,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-714941.onnx",
+                "reward": 2897.984760299325,
+                "creation_time": 1743351421.05685,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-714941.pt"
+                ]
+            },
+            {
+                "steps": 719989,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-719989.onnx",
+                "reward": 2595.9266576841474,
+                "creation_time": 1743351458.7797034,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-719989.pt"
+                ]
+            },
+            {
+                "steps": 724998,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-724998.onnx",
+                "reward": -52.799996852874756,
+                "creation_time": 1743351499.893891,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-724998.pt"
+                ]
+            },
+            {
+                "steps": 729999,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-729999.onnx",
+                "reward": -276.3999835252762,
+                "creation_time": 1743351537.756127,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-729999.pt"
+                ]
+            },
+            {
+                "steps": 734936,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-734936.onnx",
+                "reward": 3192.019264101982,
+                "creation_time": 1743351578.3754485,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-734936.pt"
+                ]
+            },
+            {
+                "steps": 739937,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-739937.onnx",
+                "reward": 1518.5043817460537,
+                "creation_time": 1743351616.6067994,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-739937.pt"
+                ]
+            },
+            {
+                "steps": 744938,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-744938.onnx",
+                "reward": 1407.654847562313,
+                "creation_time": 1743351657.1543818,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-744938.pt"
+                ]
+            },
+            {
+                "steps": 749994,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-749994.onnx",
+                "reward": 1407.654847562313,
+                "creation_time": 1743351696.9801822,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-749994.pt"
+                ]
+            },
+            {
+                "steps": 754995,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-754995.onnx",
+                "reward": null,
+                "creation_time": 1743351737.4876428,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-754995.pt"
+                ]
+            },
+            {
+                "steps": 759996,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-759996.onnx",
+                "reward": 176.09762275218964,
+                "creation_time": 1743351774.9421697,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-759996.pt"
+                ]
+            },
+            {
+                "steps": 764997,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-764997.onnx",
+                "reward": 2639.737288251519,
+                "creation_time": 1743351814.0233595,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-764997.pt"
+                ]
+            },
+            {
+                "steps": 769998,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-769998.onnx",
+                "reward": 2079.33211312443,
+                "creation_time": 1743351850.5513022,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-769998.pt"
+                ]
+            },
+            {
+                "steps": 774999,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-774999.onnx",
+                "reward": 1246.219336926937,
+                "creation_time": 1743351890.932974,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-774999.pt"
+                ]
+            },
+            {
+                "steps": 779991,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-779991.onnx",
+                "reward": 1246.219336926937,
+                "creation_time": 1743351928.1372209,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-779991.pt"
+                ]
+            },
+            {
+                "steps": 784992,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-784992.onnx",
+                "reward": null,
+                "creation_time": 1743351969.8823552,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-784992.pt"
+                ]
+            },
+            {
+                "steps": 789993,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-789993.onnx",
+                "reward": 500.00024914741516,
+                "creation_time": 1743352007.3055565,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-789993.pt"
+                ]
+            },
+            {
+                "steps": 794947,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-794947.onnx",
+                "reward": 1163.7308689951897,
+                "creation_time": 1743352046.8736706,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-794947.pt"
+                ]
+            },
+            {
+                "steps": 799995,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-799995.onnx",
+                "reward": 1327.166508634885,
+                "creation_time": 1743352083.7881532,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-799995.pt"
+                ]
+            },
+            {
+                "steps": 804996,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-804996.onnx",
+                "reward": 2174.3222535848618,
+                "creation_time": 1743352123.2921112,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-804996.pt"
+                ]
+            },
+            {
+                "steps": 809988,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-809988.onnx",
+                "reward": 2174.3222535848618,
+                "creation_time": 1743352160.9229698,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-809988.pt"
+                ]
+            },
+            {
+                "steps": 814989,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-814989.onnx",
+                "reward": null,
+                "creation_time": 1743352200.8057055,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-814989.pt"
+                ]
+            },
+            {
+                "steps": 819990,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-819990.onnx",
+                "reward": 1461.3833732008934,
+                "creation_time": 1743352238.3376925,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-819990.pt"
+                ]
+            },
+            {
+                "steps": 824991,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-824991.onnx",
+                "reward": null,
+                "creation_time": 1743352278.315499,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-824991.pt"
+                ]
+            },
+            {
+                "steps": 829992,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-829992.onnx",
+                "reward": 1784.9724303632975,
+                "creation_time": 1743352313.9074345,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-829992.pt"
+                ]
+            },
+            {
+                "steps": 834993,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-834993.onnx",
+                "reward": 2454.4645354151726,
+                "creation_time": 1743352352.6868892,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-834993.pt"
+                ]
+            },
+            {
+                "steps": 839985,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-839985.onnx",
+                "reward": 2454.4645354151726,
+                "creation_time": 1743352388.3283653,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-839985.pt"
+                ]
+            },
+            {
+                "steps": 844986,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-844986.onnx",
+                "reward": null,
+                "creation_time": 1743352429.0780208,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-844986.pt"
+                ]
+            },
+            {
+                "steps": 849987,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-849987.onnx",
+                "reward": -151.33004826307297,
+                "creation_time": 1743352465.5906458,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-849987.pt"
+                ]
+            },
+            {
+                "steps": 854988,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-854988.onnx",
+                "reward": null,
+                "creation_time": 1743352505.7939737,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-854988.pt"
+                ]
+            },
+            {
+                "steps": 859989,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-859989.onnx",
+                "reward": 836.3888362050056,
+                "creation_time": 1743352543.4502308,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-859989.pt"
+                ]
+            },
+            {
+                "steps": 864990,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-864990.onnx",
+                "reward": 187.47874915599823,
+                "creation_time": 1743352584.5951364,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-864990.pt"
+                ]
+            },
+            {
+                "steps": 869982,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-869982.onnx",
+                "reward": 187.47874915599823,
+                "creation_time": 1743352623.7080135,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-869982.pt"
+                ]
+            },
+            {
+                "steps": 874983,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-874983.onnx",
+                "reward": null,
+                "creation_time": 1743352662.666645,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-874983.pt"
+                ]
+            },
+            {
+                "steps": 879984,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-879984.onnx",
+                "reward": 3472.6313264817,
+                "creation_time": 1743352698.0703723,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-879984.pt"
+                ]
+            },
+            {
+                "steps": 884985,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-884985.onnx",
+                "reward": null,
+                "creation_time": 1743352737.5221722,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-884985.pt"
+                ]
+            },
+            {
+                "steps": 889986,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-889986.onnx",
+                "reward": 2284.9913366883993,
+                "creation_time": 1743352774.4467862,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-889986.pt"
+                ]
+            },
+            {
+                "steps": 894987,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-894987.onnx",
+                "reward": null,
+                "creation_time": 1743352816.2828119,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-894987.pt"
+                ]
+            },
+            {
+                "steps": 899979,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-899979.onnx",
+                "reward": null,
+                "creation_time": 1743352853.937829,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-899979.pt"
+                ]
+            },
+            {
+                "steps": 904980,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-904980.onnx",
+                "reward": null,
+                "creation_time": 1743352894.7710748,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-904980.pt"
+                ]
+            },
+            {
+                "steps": 909981,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-909981.onnx",
+                "reward": 171.0970138311386,
+                "creation_time": 1743352932.156589,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-909981.pt"
+                ]
+            },
+            {
+                "steps": 914982,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-914982.onnx",
+                "reward": 9.993476241827011,
+                "creation_time": 1743352969.4588282,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-914982.pt"
+                ]
+            },
+            {
+                "steps": 919983,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-919983.onnx",
+                "reward": 537.0686149001122,
+                "creation_time": 1743353009.4385304,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-919983.pt"
+                ]
+            },
+            {
+                "steps": 924984,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-924984.onnx",
+                "reward": 1316.10342271626,
+                "creation_time": 1743353044.3634915,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-924984.pt"
+                ]
+            },
+            {
+                "steps": 929976,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-929976.onnx",
+                "reward": null,
+                "creation_time": 1743353082.6639955,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-929976.pt"
+                ]
+            },
+            {
+                "steps": 934977,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-934977.onnx",
+                "reward": 3197.9890980422497,
+                "creation_time": 1743353119.1368854,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-934977.pt"
+                ]
+            },
+            {
+                "steps": 939978,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-939978.onnx",
+                "reward": 1539.928935945034,
+                "creation_time": 1743353159.7910995,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-939978.pt"
+                ]
+            },
+            {
+                "steps": 944979,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-944979.onnx",
+                "reward": 1346.462093502283,
+                "creation_time": 1743353198.3181748,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-944979.pt"
+                ]
+            },
+            {
+                "steps": 949980,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-949980.onnx",
+                "reward": -499.9999701976776,
+                "creation_time": 1743353240.0008109,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-949980.pt"
+                ]
+            },
+            {
+                "steps": 954981,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-954981.onnx",
+                "reward": -325.81504890322685,
+                "creation_time": 1743353278.2579913,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-954981.pt"
+                ]
+            },
+            {
+                "steps": 959973,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-959973.onnx",
+                "reward": null,
+                "creation_time": 1743353317.8626978,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-959973.pt"
+                ]
+            },
+            {
+                "steps": 964974,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-964974.onnx",
+                "reward": 2545.1696543097496,
+                "creation_time": 1743353355.0707498,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-964974.pt"
+                ]
+            },
+            {
+                "steps": 969975,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-969975.onnx",
+                "reward": 521.8869513869286,
+                "creation_time": 1743353394.5714407,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-969975.pt"
+                ]
+            },
+            {
+                "steps": 974976,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-974976.onnx",
+                "reward": 1368.8367498219013,
+                "creation_time": 1743353431.6815696,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-974976.pt"
+                ]
+            },
+            {
+                "steps": 979977,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-979977.onnx",
+                "reward": 197.89983069896698,
+                "creation_time": 1743353472.850624,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-979977.pt"
+                ]
+            },
+            {
+                "steps": 984978,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-984978.onnx",
+                "reward": 844.3441825211048,
+                "creation_time": 1743353509.7086663,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-984978.pt"
+                ]
+            },
+            {
+                "steps": 989985,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-989985.onnx",
+                "reward": 2740.1928129196167,
+                "creation_time": 1743353549.5350285,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-989985.pt"
+                ]
+            },
+            {
+                "steps": 994998,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-994998.onnx",
+                "reward": 2129.8585471312203,
+                "creation_time": 1743353587.3831842,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-994998.pt"
+                ]
+            },
+            {
+                "steps": 999972,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-999972.onnx",
+                "reward": null,
+                "creation_time": 1743353627.6913497,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-999972.pt"
+                ]
+            },
+            {
+                "steps": 1000036,
+                "file_path": "results\\Train_E2\\RobotBrain\\RobotBrain-1000036.onnx",
+                "reward": null,
+                "creation_time": 1743353627.8070364,
+                "auxillary_file_paths": [
+                    "results\\Train_E2\\RobotBrain\\RobotBrain-1000036.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 1000036,
+            "file_path": "results\\Train_E2\\RobotBrain.onnx",
+            "reward": null,
+            "creation_time": 1743353627.8070364,
+            "auxillary_file_paths": [
+                "results\\Train_E2\\RobotBrain\\RobotBrain-1000036.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "0.30.0",
+        "torch_version": "1.8.2+cu111"
+    }
+}

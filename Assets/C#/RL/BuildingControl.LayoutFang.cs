@@ -36,12 +36,12 @@ public partial class BuildingControl : MonoBehaviour
         CreateDoorBetweenRooms(roomList.ToArray(), CN); //根据连通图CN生成门
 
         //在最后一个房间的左后两个墙中心生成两扇门作为逃生出口
-        AddExitDoors(roomList[roomList.Count - 1]);
+        AddExitDoors(roomList[roomList.Count - 1]); 
     }
     public void ClearPreviousRooms()// 场景重置函数
     {
         //
-        Debug.Log("1.清空场景函数");
+       // Debug.Log("1.清空场景函数");
         // 检查 AllObjects 是否为 null，如果是，初始化为一个空数组
         roomList = new List<Room>();
         RoomNum = 1;

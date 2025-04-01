@@ -13,162 +13,142 @@ public partial class EnvControl : MonoBehaviour
     //机器人列表
     public List<RobotControl> RobotList = new();
     // 机器人大脑列表
-    public List<RobotBrain> BrianList = new();
+    public List<RobotBrain> BrainList = new();
     //环境中的出口
     public List<GameObject> Exits=new();
-
-
+    //存储房间和门的位置信息
+    public List<Vector3> cachedRoomPositions;
+    public List<Vector3> cachedDoorPositions;
     /*生成场景和导航时用到的组件 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
     public ComplexityControl complexityControl;//生成环境用到的组件
     public NavMeshSurface surface;//生成导航的组件
     public GameObject HumanPrefab;//生成人类用到的组件
     public GameObject RobotPrefab;//添加机器人用到的组件
     public GameObject BrainPerfab;//机器人大脑预制体
+
+    public float TotalSize;//区域总大小
+    public int RoomNum;//房间数目
     // 是否在训练
     public bool isTraining;
-   /* // 是否使用火源生成器
-    public bool useFireAgent;*/
-    // 是否使用强化学习机器人
-    public bool useAgent;
     // 是否使用机器人
     public bool useRobot;
 
 
-
-
     /*展示Demo使用，用于场景重置!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
     public int currentFloorhuman=0;
-    private float timer = 0f; // 计时器
-    private const float interval = 1f; // 间隔时间（1 秒）
+
+    public int StepCount;//计数器
+    public int MaxStep;//最大步数
 
 
     private void Start()
     {
 
+        //Debug.Log("Env的start函数");
 
-
-            /*int number1 = 900;
-            int number2 = UnityEngine.Random.Range(8, 15); // 划分的房间数量
-            timer = 0f;
-            complexityControl.BeginGenerationBinary(number1, number2);
-      */
-
-        /* //print("Env环境初始化脚本开始了");
-         //生成环境，环境的父物体是Env的子物体：Buildin。生成的环境包括地板的NavMeshModified和门的NavMeshLink
-
-         int number1 = UnityEngine.Random.Range(100, 1000);
-         int number2 = UnityEngine.Random.Range(5, 10); // 划分的房间数量
-
-         int number1 = 900;
-         int number2 = 10; // 划分的房间数量
-         complexityControl.BeginGenerationFangTree(number1, number2);//方形树图发生成房间布局
-
-         complexityControl.BeginGenerationBinary(number1, number2);
-         surface.BuildNavMesh();//生成导航
-                                //AddRobot();
-         AddPerson(10);
-
-         foreach (HumanControl human in personList)//统计当前楼层的人数
-         {
-             if (human.isActiveAndEnabled)
-             {
-                 currentFloorhuman++;
-             }
-             Debug.Log(currentFloorhuman);
-         }
-
-         AddExits();
-         CleanTheScene();*/
-
-    }
-
-
-    private void Update()
-    {
-
-        // 每帧更新计时器,这一部分用于生成场景展示
-        /*timer += Time.deltaTime;
-
-        // 如果计时器达到 1 秒
-        if (timer >= interval)
+        if (currentFloorhuman == 0)
         {
-            int number1 = 900;
+            CleanTheScene();
             int number2 = UnityEngine.Random.Range(8, 15); // 划分的房间数量
-            complexityControl.BeginGenerationBinary(number1, number2);
+            TotalSize = 900;
+            RoomNum = number2;
+            complexityControl.BeginGenerationBinary(TotalSize, RoomNum);
             surface.BuildNavMesh();//生成导航
-            timer = 0f;
-        }*/
-
-        // ！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！ 这一部分是整个流程演示
-        if (isTraining != true)
-        {
-            if (currentFloorhuman == 0)
+                                   //AddRobot();
+            AddPerson(10);
+            AddRobot();//添加机器人
+            foreach (HumanControl human in personList)//统计当前楼层的人数
             {
-                CleanTheScene();
-                int number2 = UnityEngine.Random.Range(8, 15); // 划分的房间数量
-                complexityControl.BeginGenerationBinary(900, number2);
-                surface.BuildNavMesh();//生成导航
-                                       //AddRobot();
-                AddPerson(10);
-                AddRobot(1);//添加机器人
-                foreach (HumanControl human in personList)//统计当前楼层的人数
+                if (human.isActiveAndEnabled)
                 {
-                    if (human.isActiveAndEnabled)
-                    {
-                        currentFloorhuman++;
-                    }
-                    //Debug.Log(currentFloorhuman);
+                    currentFloorhuman++;
                 }
-                AddExits();//添加出口，以便于后续机器人导航使用
-                AddRobotBrain(1);//添加机器人大脑
-
+                //Debug.Log(currentFloorhuman);
             }
+            AddExits();//添加出口，以便于后续机器人导航使用
+            AddRobotBrain();//添加机器人大脑
+
+            StepCount = 0;//训练决策数目
+            MaxStep = 5000;
         }
-        //！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！   
-
-
     }
-    /// <summary>
-    /// 获取随机出生位置（）
-    /// </summary>
-    /// <param name="floor"></param>
-    /// <returns></returns>
-    private static Vector3 GetSpawnBlockPosition(int floor)//！！！！！！！！奶奶的，坐标的问题也要注意一下,找没有父物体的查看世界坐标
+
+    private void FixedUpdate()
     {
-        Vector3 spawnBlockPosition = new();
-        for (int tryCounter = 80000; tryCounter > 0; tryCounter--)
+        StepCount++;
+        if(StepCount > MaxStep)
         {
-            // Generate random X and Z coordinates within the (0, 10) range.
-            float randomX = Random.Range(1, 9) + 0.5f;
-            float randomZ = Random.Range(1, 9) + 0.5f;
-
-            // 跳过该区域
-            if (floor == 1 && randomX is > 5 and < 8 && randomZ is > 2 and < 5)
-                continue;
-
-            // Set the spawn position at the appropriate floor level
-            spawnBlockPosition.Set(randomX, (floor - 1) * 4, randomZ);
-
-            // Check if the spawn position is valid (no collision)
-            if (Physics.CheckBox(spawnBlockPosition + Vector3.up, new Vector3(0.49f, 0.49f, 0.49f)) is false)
-
-                return spawnBlockPosition;
+            print("超出次数限制");
+            BrainList[0].EpisodeInterrupted();//超出次数，结束当前回合
+            StepCount = 0;
         }
-        print("生成的随机位置是" + spawnBlockPosition);
-        // Return a default value if no valid position is found
-        return new Vector3();
     }
 
-    private void CleanTheScene()
-    {
-        print("执行CleanScene函数");
 
-        ResetAllAgents();
+    /*nt number1 = 900;
+    int number2 = UnityEngine.Random.Range(8, 15); // 划分的房间数量
+    timer = 0f;
+    complexityControl.BeginGenerationBinary(number1, number2);*/
+
+
+
+
+
+    /*  private void Update()
+      {
+
+          // 每帧更新计时器,这一部分用于生成场景展示
+          *//* timer += Time.deltaTime;
+
+           // 如果计时器达到 1 秒
+           if (timer >= interval)
+           {
+
+               int number2 = UnityEngine.Random.Range(25, 35); // 划分的房间数量
+               complexityControl.BeginGenerationBinary(4900, number2);
+               surface.BuildNavMesh();//生成导航
+               timer = 0f;
+           }*//*
+
+          // ！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！ 这一部分是整个流程演示
+          if (isTraining != true)
+          {
+              if (currentFloorhuman == 0)
+              {
+                  CleanTheScene();
+                  int number2 = UnityEngine.Random.Range(20, 30); // 划分的房间数量
+                  complexityControl.BeginGenerationBinary(3600, number2);
+                  surface.BuildNavMesh();//生成导航
+                                         //AddRobot();
+                  AddPerson(10);
+                  AddRobot(1);//添加机器人
+                  foreach (HumanControl human in personList)//统计当前楼层的人数
+                  {
+                      if (human.isActiveAndEnabled)
+                      {
+                          currentFloorhuman++;
+                      }
+                      //Debug.Log(currentFloorhuman);
+                  }
+                  AddExits();//添加出口，以便于后续机器人导航使用
+                  AddRobotBrain(1);//添加机器人大脑
+
+              }
+          }
+          //！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！   
+
+
+      }*/
+    public void CleanTheScene()
+    {
+       // print("执行CleanScene函数");
+
+        ResetAgentandClearList();
     }
     /// <summary>
     /// 重置所有机器人控制智能体
     /// </summary>
-    private void ResetAllAgents()
+    private void ResetAgentandClearList()
     {
         if (!useRobot)
             return;
@@ -199,17 +179,10 @@ public partial class EnvControl : MonoBehaviour
             RobotList.Clear();
         }
 
-        // 清除智能体
-        if (BrianList.Count > 0)
+        // 清除智能体，只清空智能体列表即可，实体不用清除
+        if (BrainList.Count > 0)
         {
-            foreach (RobotBrain agent in BrianList)
-            {
-                if (agent != null && agent.gameObject != null)
-                {
-                    Destroy(agent.gameObject);
-                }
-            }
-            BrianList.Clear();
+            BrainList.Clear();
         }
 
         // 清除出口
@@ -224,38 +197,13 @@ public partial class EnvControl : MonoBehaviour
             }
             Exits.Clear();
         }
+        cachedDoorPositions.Clear();
+        cachedRoomPositions.Clear();
     }
-    /// <summary>
-    /// 重置所有人类
-    /// </summary>
-    public void ResetAllHumans()
-    {
-        Debug.Log("进入了重置人类的函数");
-        foreach (HumanControl human in personList)
-        {
-            Debug.Log("重置时找到了列表中的人类" + human);
-            int randomFloor = 1;
-            Vector3 spawnPosition = GetSpawnBlockPosition(randomFloor) + new Vector3(0, 1, 0);
-
-            if (spawnPosition == Vector3.zero)
-                continue;
-            if (!human.gameObject.activeSelf)
-            {
-                human.gameObject.SetActive(true);
-                human.transform.SetPositionAndRotation(spawnPosition, Quaternion.identity);
-            }  // 激活人物}
-            human.Start();
-        }
-    }
-
-    private void AddRobot(int num)  //在这里添加机器人，及其大脑.机器人的数量较少而且确定，是否有必要控制其数量？
+    public void AddRobot()  //在这里动态添加机器人，以确保机器人是在环境生成之后才添加上去的，以确保机器人导航的正常使用
     {
         // 在场景中生成num个机器人，并把他们加入到List中
-
-        GameObject RobotParent = GameObject.Find("RobotList");
-
-        for (int i = 0; i < num; i++)
-        {
+            GameObject RobotParent = GameObject.Find("RobotList");
             Vector3 spawnPosition = Vector3.zero;
             // 尝试找到一个没有碰撞的位置
             // 随机生成位置
@@ -266,33 +214,22 @@ public partial class EnvControl : MonoBehaviour
             GameObject Robot = Instantiate(RobotPrefab, spawnPosition, Quaternion.identity);//实例化机器人的位置
             RobotList.Add(Robot.GetComponent<RobotControl>()); //将机器人加入列表
             Robot.transform.parent = RobotParent.transform;    //将机器人放在场景的RobotList物体下
-        }
     }
 
-    private void AddRobotBrain(int num)  //在这里添加机器人大脑. 并进行组装  机器人的数量较少而且确定，是否有必要控制其数量？
+    public void AddRobotBrain()  //在这里添加机器人大脑. 并进行组装  机器人的数量较少而且确定，因此直接在场景中进行添加
     {
-        GameObject BrainParent = GameObject.Find("RobotBrain");
-        Debug.Log("我在添加机器人的大脑");
-        for(int i = 0;i < num;i++)
-        {
-
-            GameObject RobotBrain = Instantiate(BrainPerfab);//实例化机器人的位置
-            BrianList.Add(RobotBrain.GetComponent<RobotBrain>());//加入Brain列表中
-            RobotBrain robotBrain = RobotBrain.GetComponent<RobotBrain>();
-            RobotBrain.transform.parent = BrainParent.transform;//设置父物体
-
-            /*  在这里进行机器人和大脑的脚本初始化工作！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！*/
-            RobotControl robot = RobotList[i];
+          GameObject RobotBrain = GameObject.Find("RobotBrain1");
+          RobotBrain robotBrain = RobotBrain.GetComponent<RobotBrain>();
+          BrainList.Add(robotBrain);
+               /*  在这里进行机器人和大脑的脚本初始化工作！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！*/
+              RobotControl robot = RobotList[0];
             robot.myAgent=robotBrain;
-
-            robotBrain.myEnv = this;
             robotBrain.robot = robot.gameObject;
             robotBrain.robotNavMeshAgent=robot.GetComponent<NavMeshAgent>();
             robotBrain.robotInfo = robot;
             robotBrain.robotRigidbody=robot.GetComponent<Rigidbody>();
-        }
     }
-    private void AddPerson(int num)
+    public void AddPerson(int num)
     {
         // 在场景中生成num个人类，并把他们加入到personList中
         GameObject humanParent = GameObject.Find("HumanList");
@@ -315,10 +252,11 @@ public partial class EnvControl : MonoBehaviour
                 float radius = 0.5f; // 人类的碰撞半径
                 Collider[] colliders = Physics.OverlapSphere(spawnPosition, radius);
 
-                // 如果没有碰撞，则找到合适位置
+                // 如果没有碰撞，则找到合适位置,跳出循环
                 if (colliders.Length == 0)
                 {
                     positionFound = true;
+                    break;
                 }
 
                 attempts++;
@@ -329,6 +267,7 @@ public partial class EnvControl : MonoBehaviour
                 // 实例化人类
                 GameObject Person = Instantiate(HumanPrefab, spawnPosition, Quaternion.identity);
                 personList.Add(Person.GetComponent<HumanControl>());
+                Person.GetComponent<HumanControl>().Start();//初始化人类的各个变量
                 Person.transform.parent = humanParent.transform;
                 Person.GetComponent<HumanControl>().myEnv = this;
             }
@@ -338,13 +277,39 @@ public partial class EnvControl : MonoBehaviour
             }
         }
 
-        Debug.Log("执行生成人类函数");
+       // Debug.Log("执行生成人类函数");
     }
-    private void AddExits()
+    public void AddExits()
     {
          GameObject Exit = GameObject.Find("Exit");
+        if (Exit != null)
+        {
             Exits.Add(Exit);
-            Debug.Log("执行添加出口函数，赋值");
+         //   Debug.Log("执行添加出口函数，赋值");
+        }
+        else { Debug.Log("没有找到出口的游戏物体"); }
        
+    }
+
+    public List<Vector3> GetAllRoomPositions()
+    {
+        print("执行了房间位置缓存函数");
+        List<Vector3> positions = new List<Vector3>();
+        foreach (GameObject roomObj in GameObject.FindGameObjectsWithTag("Floor"))
+        {
+            positions.Add(roomObj.transform.position);
+            //print("房间位置为："+ roomObj.transform.position);
+        }
+        return positions;
+    }
+
+    public List<Vector3> GetAllDoorPositions()
+    {
+        List<Vector3> positions = new List<Vector3>();
+        foreach (GameObject roomObj in GameObject.FindGameObjectsWithTag("Door"))
+        {
+            positions.Add(roomObj.transform.position);
+        }
+        return positions;
     }
 }

@@ -9,6 +9,8 @@ TagManager:
   - Human
   - Robot
   - Wall
+  - Room
+  - Floor
   layers:
   - Default
   - TransparentFX
