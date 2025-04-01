@@ -18,7 +18,6 @@ public class Robot : MonoBehaviour
         this.gameObject.SetActive(true);
         isRunning = false;//机器人默认为不工作
         myDirectFollowers = new List<Person>();
-
         _botNavMeshAgent = GetComponent<NavMeshAgent>();
     }
 

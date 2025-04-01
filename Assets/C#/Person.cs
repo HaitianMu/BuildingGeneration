@@ -156,7 +156,7 @@ public partial class Person : MonoBehaviour
                          //print("找到了在工作的机器人，我的领导者是：" + leaderCandidates[0].name);
                             if (!myLeader.GetComponent<Robot>().myDirectFollowers.Contains(gameObject.GetComponent<Person>()))
                             {
-                                print(this.name + "将自己加入机器人的跟随者列表");
+                                //print(this.name + "将自己加入机器人的跟随者列表");
                                 myLeader.GetComponent<Robot>().myDirectFollowers.Add(gameObject.GetComponent<Person>());//将自己加入机器人的跟随者列表
                             }
                             //print(myLeader.GetComponent<Robot>().myDirectFollowers);
