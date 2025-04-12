@@ -52,42 +52,42 @@ public partial class BuildingControl : MonoBehaviour
                     /*Debug.Log(rooms[i].roomObject.name + "和" + rooms[j].roomObject.name + "相邻");//调试用*/
                     Vector3 DoorPosition;
                     // 右方相邻
-                    if (Mathf.Abs(rooms[i].XZposition.x + rooms[i].width - rooms[j].XZposition.x) < 0.1f)
+                    if (Mathf.Abs(rooms[i].xzPosition.x + rooms[i].width - rooms[j].xzPosition.x) < 0.1f)
                     {
                         // Debug.Log("在该房间右方相邻");//调试用
                         // 如果两个房间在 x 轴方向上相邻,检查两个房间相邻部分在z轴方向的差值.如果<2，那么我们不认为这两个房间是相邻的,因为有 1 的距离要用来放门
                         //总体可分为三种情况
-                        if (rooms[j].XZposition.z < rooms[i].XZposition.z && rooms[j].XZposition.z + rooms[j].height > rooms[i].XZposition.z && rooms[j].XZposition.z + rooms[j].height - rooms[i].XZposition.z >= distance)
+                        if (rooms[j].xzPosition.z < rooms[i].xzPosition.z && rooms[j].xzPosition.z + rooms[j].height > rooms[i].xzPosition.z && rooms[j].xzPosition.z + rooms[j].height - rooms[i].xzPosition.z >= distance)
                         {
                             // Debug.Log("在该房间右方相邻：情况1");//调试用
-                            DoorPosition = new Vector3(rooms[i].XZposition.x + rooms[i].width, y / 2, (rooms[i].XZposition.z + rooms[j].XZposition.z + rooms[j].height) / 2);
+                            DoorPosition = new Vector3(rooms[i].xzPosition.x + rooms[i].width, y / 2, (rooms[i].xzPosition.z + rooms[j].xzPosition.z + rooms[j].height) / 2);
                             /* DivideWall(rooms[i].roomObject.transform.Find("RightWall"), DoorPosition, "RightWall");
                              DivideWall(rooms[j].roomObject.transform.Find("leftWall"), DoorPosition, "leftWall");*/
                             CreateDoor(DoorPosition, doorWidth, true, "Door");
                             continue;
                         }
-                        if (rooms[j].XZposition.z < rooms[i].XZposition.z + rooms[i].height && rooms[j].XZposition.z + rooms[j].height > rooms[i].XZposition.z + rooms[i].height && rooms[i].XZposition.z + rooms[i].height - rooms[j].XZposition.z >= distance)
+                        if (rooms[j].xzPosition.z < rooms[i].xzPosition.z + rooms[i].height && rooms[j].xzPosition.z + rooms[j].height > rooms[i].xzPosition.z + rooms[i].height && rooms[i].xzPosition.z + rooms[i].height - rooms[j].xzPosition.z >= distance)
                         {
                             // Debug.Log("在该房间右方相邻：情况2");//调试用
-                            DoorPosition = new Vector3(rooms[i].XZposition.x + rooms[i].width, y / 2, (rooms[j].XZposition.z + rooms[i].XZposition.z + rooms[i].height) / 2);
+                            DoorPosition = new Vector3(rooms[i].xzPosition.x + rooms[i].width, y / 2, (rooms[j].xzPosition.z + rooms[i].xzPosition.z + rooms[i].height) / 2);
                             /* DivideWall(rooms[i].roomObject.transform.Find("RightWall"), DoorPosition, "RightWall");
                              DivideWall(rooms[j].roomObject.transform.Find("leftWall"), DoorPosition, "leftWall");*/
                             CreateDoor(DoorPosition, doorWidth, true, "Door");
                             continue;
                         }
-                        if (rooms[j].XZposition.z >= rooms[i].XZposition.z && rooms[j].XZposition.z + rooms[j].height <= rooms[i].XZposition.z + rooms[i].height && rooms[j].height >= distance)
+                        if (rooms[j].xzPosition.z >= rooms[i].xzPosition.z && rooms[j].xzPosition.z + rooms[j].height <= rooms[i].xzPosition.z + rooms[i].height && rooms[j].height >= distance)
                         {
                             //  Debug.Log("在该房间右方相邻：情况3");//调试用
-                            DoorPosition = new Vector3(rooms[i].XZposition.x + rooms[i].width, y / 2, rooms[j].XZposition.z + rooms[j].height / 2);
+                            DoorPosition = new Vector3(rooms[i].xzPosition.x + rooms[i].width, y / 2, rooms[j].xzPosition.z + rooms[j].height / 2);
                             /* DivideWall(rooms[i].roomObject.transform.Find("RightWall"), DoorPosition, "RightWall");
                              DivideWall(rooms[j].roomObject.transform.Find("leftWall"), DoorPosition, "leftWall");*/
                             CreateDoor(DoorPosition, doorWidth, true, "Door");
                             continue;
                         }
-                        if (rooms[j].XZposition.z < rooms[i].XZposition.z && rooms[j].XZposition.z + rooms[j].height > rooms[i].XZposition.z + rooms[i].height && rooms[i].height >= distance)
+                        if (rooms[j].xzPosition.z < rooms[i].xzPosition.z && rooms[j].xzPosition.z + rooms[j].height > rooms[i].xzPosition.z + rooms[i].height && rooms[i].height >= distance)
                         {
                             //   Debug.Log("在该房间右方相邻：情况4");//调试用
-                            DoorPosition = new Vector3(rooms[i].XZposition.x + rooms[i].width, y / 2, rooms[i].XZposition.z + rooms[i].height);
+                            DoorPosition = new Vector3(rooms[i].xzPosition.x + rooms[i].width, y / 2, rooms[i].xzPosition.z + rooms[i].height);
                             /*  DivideWall(rooms[i].roomObject.transform.Find("RightWall"), DoorPosition, "RightWall");
                               DivideWall(rooms[j].roomObject.transform.Find("leftWall"), DoorPosition, "leftWall");*/
                             CreateDoor(DoorPosition, doorWidth, true, "Door");
@@ -96,103 +96,103 @@ public partial class BuildingControl : MonoBehaviour
                     }
 
                     //左方相邻
-                   else if (Mathf.Abs(rooms[i].XZposition.x - rooms[j].width - rooms[j].XZposition.x) < 0.1f)
+                   else if (Mathf.Abs(rooms[i].xzPosition.x - rooms[j].width - rooms[j].xzPosition.x) < 0.1f)
                     {
                         // 如果两个房间在 x 轴方向上相邻,检查两个房间相邻部分在z轴方向的差值.如果<2，那么我们不认为这两个房间是相邻的,因为有 1 的距离要用来放门
                         // Debug.Log("在该房间左方相邻");//调试用
                         //总体可分为三种情况
-                        if (rooms[j].XZposition.z <= rooms[i].XZposition.z && rooms[j].XZposition.z + rooms[j].height >= rooms[i].XZposition.z && rooms[j].XZposition.z + rooms[j].height - rooms[i].XZposition.z >= distance)
+                        if (rooms[j].xzPosition.z <= rooms[i].xzPosition.z && rooms[j].xzPosition.z + rooms[j].height >= rooms[i].xzPosition.z && rooms[j].xzPosition.z + rooms[j].height - rooms[i].xzPosition.z >= distance)
                         {
                             //  Debug.Log("左方相邻第一种情况");//调试用
-                            DoorPosition = new Vector3(rooms[i].XZposition.x, y / 2, (rooms[i].XZposition.z + rooms[j].XZposition.z + rooms[j].height) / 2);
+                            DoorPosition = new Vector3(rooms[i].xzPosition.x, y / 2, (rooms[i].xzPosition.z + rooms[j].xzPosition.z + rooms[j].height) / 2);
                             /*   DivideWall(rooms[i].roomObject.transform.Find("RightWall"), DoorPosition, "RightWall");
                                DivideWall(rooms[j].roomObject.transform.Find("leftWall"), DoorPosition, "leftWall");*/
                             CreateDoor(DoorPosition, doorWidth, true, "Door");
                             continue;
                         }
-                        if (rooms[j].XZposition.z <= rooms[i].XZposition.z + rooms[i].height && rooms[j].XZposition.z + rooms[j].height >= rooms[i].XZposition.z + rooms[i].height && rooms[i].XZposition.z + rooms[i].height - rooms[j].XZposition.z >= distance)
+                        if (rooms[j].xzPosition.z <= rooms[i].xzPosition.z + rooms[i].height && rooms[j].xzPosition.z + rooms[j].height >= rooms[i].xzPosition.z + rooms[i].height && rooms[i].xzPosition.z + rooms[i].height - rooms[j].xzPosition.z >= distance)
                         {
                             // Debug.Log("左方相邻第二种情况");//调试用
-                            DoorPosition = new Vector3(rooms[i].XZposition.x, y / 2, (rooms[j].XZposition.z + rooms[i].XZposition.z + rooms[i].height) / 2);
+                            DoorPosition = new Vector3(rooms[i].xzPosition.x, y / 2, (rooms[j].xzPosition.z + rooms[i].xzPosition.z + rooms[i].height) / 2);
                             /*DivideWall(rooms[i].roomObject.transform.Find("RightWall"), DoorPosition, "RightWall");
                             DivideWall(rooms[j].roomObject.transform.Find("leftWall"), DoorPosition, "leftWall");*/
                             CreateDoor(DoorPosition, doorWidth, true, "Door");
                             continue;
                         }
-                        if (rooms[j].XZposition.z >= rooms[i].XZposition.z && rooms[j].XZposition.z + rooms[j].height <= rooms[i].XZposition.z + rooms[i].height && rooms[j].height >= distance)
+                        if (rooms[j].xzPosition.z >= rooms[i].xzPosition.z && rooms[j].xzPosition.z + rooms[j].height <= rooms[i].xzPosition.z + rooms[i].height && rooms[j].height >= distance)
                         {
                             //  Debug.Log("左方相邻第三种情况");//调试用
-                            DoorPosition = new Vector3(rooms[i].XZposition.x, y / 2, rooms[j].XZposition.z + rooms[j].height / 2);
+                            DoorPosition = new Vector3(rooms[i].xzPosition.x, y / 2, rooms[j].xzPosition.z + rooms[j].height / 2);
                             /*  DivideWall(rooms[i].roomObject.transform.Find("RightWall"), DoorPosition, "RightWall");
                               DivideWall(rooms[j].roomObject.transform.Find("leftWall"), DoorPosition, "leftWall");*/
                             CreateDoor(DoorPosition, doorWidth, true, "Door");
                             continue;
                         }
-                        if (rooms[j].XZposition.z < rooms[i].XZposition.z && rooms[j].XZposition.z + rooms[j].height > rooms[i].XZposition.z + rooms[i].height && rooms[i].height >= distance)
+                        if (rooms[j].xzPosition.z < rooms[i].xzPosition.z && rooms[j].xzPosition.z + rooms[j].height > rooms[i].xzPosition.z + rooms[i].height && rooms[i].height >= distance)
                         {
                             //  Debug.Log("左方相邻第四种情况");//调试用
-                            DoorPosition = new Vector3(rooms[i].XZposition.x, y / 2, rooms[i].XZposition.z + rooms[i].height);
+                            DoorPosition = new Vector3(rooms[i].xzPosition.x, y / 2, rooms[i].xzPosition.z + rooms[i].height);
                             CreateDoor(DoorPosition, doorWidth, true, "Door");
                             continue;
                         }
                     }
                     //上方相邻
-                    else if (Mathf.Abs(rooms[i].XZposition.z + rooms[i].height - rooms[j].XZposition.z) < 0.3f)
+                    else if (Mathf.Abs(rooms[i].xzPosition.z + rooms[i].height - rooms[j].xzPosition.z) < 0.3f)
                     {
                         //  Debug.Log("在该房间上方相邻");//调试用
                         // 如果两个房间在 z 轴方向上相邻，检查两个房间相邻部分在x轴方向的差值.如果<2，那么我们不认为这两个房间是相邻的,因为有 1 的距离要用来放门
-                        if (rooms[j].XZposition.x < rooms[i].XZposition.x && rooms[j].XZposition.x + rooms[j].width > rooms[i].XZposition.x && rooms[j].XZposition.x + rooms[j].width - rooms[i].XZposition.x >= distance)
+                        if (rooms[j].xzPosition.x < rooms[i].xzPosition.x && rooms[j].xzPosition.x + rooms[j].width > rooms[i].xzPosition.x && rooms[j].xzPosition.x + rooms[j].width - rooms[i].xzPosition.x >= distance)
                         {
-                            DoorPosition = new Vector3((rooms[j].XZposition.x + rooms[j].width + rooms[i].XZposition.x) / 2, y / 2, rooms[i].XZposition.z + rooms[i].height);
+                            DoorPosition = new Vector3((rooms[j].xzPosition.x + rooms[j].width + rooms[i].xzPosition.x) / 2, y / 2, rooms[i].xzPosition.z + rooms[i].height);
                             CreateDoor(DoorPosition, doorWidth, false, "Door");
                             continue;
 
                         }
-                        else if (rooms[j].XZposition.x < rooms[i].XZposition.x + rooms[i].width && rooms[j].XZposition.x + rooms[j].width > rooms[i].XZposition.x + rooms[i].width && rooms[i].XZposition.x + rooms[i].width - rooms[j].XZposition.x >= distance)
+                        else if (rooms[j].xzPosition.x < rooms[i].xzPosition.x + rooms[i].width && rooms[j].xzPosition.x + rooms[j].width > rooms[i].xzPosition.x + rooms[i].width && rooms[i].xzPosition.x + rooms[i].width - rooms[j].xzPosition.x >= distance)
                         {
-                            DoorPosition = new Vector3((rooms[i].XZposition.x + rooms[i].width + rooms[j].XZposition.x) / 2, y / 2, rooms[i].XZposition.z + rooms[i].height);
+                            DoorPosition = new Vector3((rooms[i].xzPosition.x + rooms[i].width + rooms[j].xzPosition.x) / 2, y / 2, rooms[i].xzPosition.z + rooms[i].height);
                             CreateDoor(DoorPosition, doorWidth, false, "Door");
                             continue;
                         }
-                        else if (rooms[j].XZposition.x >= rooms[i].XZposition.x && rooms[j].XZposition.x + rooms[j].width <= rooms[i].XZposition.x + rooms[i].width && rooms[j].width >= distance)
+                        else if (rooms[j].xzPosition.x >= rooms[i].xzPosition.x && rooms[j].xzPosition.x + rooms[j].width <= rooms[i].xzPosition.x + rooms[i].width && rooms[j].width >= distance)
                         {
-                            DoorPosition = new Vector3(rooms[j].XZposition.x + rooms[j].width / 2, y / 2, rooms[i].XZposition.z + rooms[i].height);
+                            DoorPosition = new Vector3(rooms[j].xzPosition.x + rooms[j].width / 2, y / 2, rooms[i].xzPosition.z + rooms[i].height);
                             CreateDoor(DoorPosition, doorWidth, false, "Door");
                             continue;
                         }
-                        else if (rooms[j].XZposition.x < rooms[i].XZposition.x && rooms[j].XZposition.x + rooms[j].width > rooms[i].XZposition.x + rooms[i].width && rooms[i].width >= distance)
+                        else if (rooms[j].xzPosition.x < rooms[i].xzPosition.x && rooms[j].xzPosition.x + rooms[j].width > rooms[i].xzPosition.x + rooms[i].width && rooms[i].width >= distance)
                         {
-                            DoorPosition = new Vector3(rooms[i].XZposition.x + rooms[i].width / 2, y / 2, rooms[i].XZposition.z + rooms[i].height);
+                            DoorPosition = new Vector3(rooms[i].xzPosition.x + rooms[i].width / 2, y / 2, rooms[i].xzPosition.z + rooms[i].height);
                             CreateDoor(DoorPosition, doorWidth, false, "Door");
                             continue;
                         }
                     }
                     //下方相邻
-                   else if (Mathf.Abs(rooms[i].XZposition.z - rooms[j].height - rooms[j].XZposition.z) < 0.1f)
+                   else if (Mathf.Abs(rooms[i].xzPosition.z - rooms[j].height - rooms[j].xzPosition.z) < 0.1f)
                     {
                         // 如果两个房间在 z 轴方向上相邻，检查两个房间相邻部分在x轴方向的差值.如果<2，那么我们不认为这两个房间是相邻的,因为有 1 的距离要用来放门
                         // Debug.Log("在该房间下方相邻");//调试用
-                        if (rooms[j].XZposition.x < rooms[i].XZposition.x && rooms[j].XZposition.x + rooms[j].width > rooms[i].XZposition.x && rooms[j].XZposition.x + rooms[j].width - rooms[i].XZposition.x >= distance)
+                        if (rooms[j].xzPosition.x < rooms[i].xzPosition.x && rooms[j].xzPosition.x + rooms[j].width > rooms[i].xzPosition.x && rooms[j].xzPosition.x + rooms[j].width - rooms[i].xzPosition.x >= distance)
                         {
-                            DoorPosition = new Vector3((rooms[j].XZposition.x + rooms[j].width + rooms[i].XZposition.x) / 2, y / 2, rooms[i].XZposition.z);
+                            DoorPosition = new Vector3((rooms[j].xzPosition.x + rooms[j].width + rooms[i].xzPosition.x) / 2, y / 2, rooms[i].xzPosition.z);
                             CreateDoor(DoorPosition, doorWidth, false, "Door");
                             continue;
                         }
-                        else if (rooms[j].XZposition.x < rooms[i].XZposition.x + rooms[i].width && rooms[j].XZposition.x + rooms[j].width > rooms[i].XZposition.x + rooms[i].width && rooms[i].XZposition.x + rooms[i].width - rooms[j].XZposition.x >= distance)
+                        else if (rooms[j].xzPosition.x < rooms[i].xzPosition.x + rooms[i].width && rooms[j].xzPosition.x + rooms[j].width > rooms[i].xzPosition.x + rooms[i].width && rooms[i].xzPosition.x + rooms[i].width - rooms[j].xzPosition.x >= distance)
                         {
-                            DoorPosition = new Vector3((rooms[j].XZposition.x + rooms[j].width + rooms[i].XZposition.x) / 2, y / 2, rooms[i].XZposition.z);
+                            DoorPosition = new Vector3((rooms[j].xzPosition.x + rooms[j].width + rooms[i].xzPosition.x) / 2, y / 2, rooms[i].xzPosition.z);
                             CreateDoor(DoorPosition, doorWidth, false, "Door");
                             continue;
                         }
-                        else if (rooms[j].XZposition.x >= rooms[i].XZposition.x && rooms[j].XZposition.x + rooms[j].width <= rooms[i].XZposition.x + rooms[i].width && rooms[j].width >= distance)
+                        else if (rooms[j].xzPosition.x >= rooms[i].xzPosition.x && rooms[j].xzPosition.x + rooms[j].width <= rooms[i].xzPosition.x + rooms[i].width && rooms[j].width >= distance)
                         {
-                            DoorPosition = new Vector3((rooms[j].XZposition.x + rooms[j].width + rooms[i].XZposition.x) / 2, y / 2, rooms[i].XZposition.z);
+                            DoorPosition = new Vector3((rooms[j].xzPosition.x + rooms[j].width + rooms[i].xzPosition.x) / 2, y / 2, rooms[i].xzPosition.z);
                             CreateDoor(DoorPosition, doorWidth, false, "Door");
                             continue;
                         }
-                        else if (rooms[j].XZposition.x < rooms[i].XZposition.x && rooms[j].XZposition.x + rooms[j].width > rooms[i].XZposition.x + rooms[i].width && rooms[i].width >= distance )
+                        else if (rooms[j].xzPosition.x < rooms[i].xzPosition.x && rooms[j].xzPosition.x + rooms[j].width > rooms[i].xzPosition.x + rooms[i].width && rooms[i].width >= distance )
                         {
-                            DoorPosition = new Vector3((rooms[j].XZposition.x + rooms[j].width + rooms[i].XZposition.x) / 2, y / 2, rooms[i].XZposition.z);
+                            DoorPosition = new Vector3((rooms[j].xzPosition.x + rooms[j].width + rooms[i].xzPosition.x) / 2, y / 2, rooms[i].xzPosition.z);
                             CreateDoor(DoorPosition, doorWidth, false, "Door");
                             continue;
                         }
@@ -205,9 +205,9 @@ public partial class BuildingControl : MonoBehaviour
     {
         float wallHeight = y;//门的高度
                              // 右方门的位置
-        Vector3 RightDoorPosition = new Vector3(EscapeRoom.XZposition.x + EscapeRoom.width, wallHeight / 2, EscapeRoom.XZposition.z + EscapeRoom.height / 2);
+        Vector3 RightDoorPosition = new Vector3(EscapeRoom.xzPosition.x + EscapeRoom.width, wallHeight / 2, EscapeRoom.xzPosition.z + EscapeRoom.height / 2);
         // 上方门的位置
-        Vector3 FrontDoorPosition = new Vector3(EscapeRoom.XZposition.x + EscapeRoom.width / 2, wallHeight / 2, EscapeRoom.XZposition.z + EscapeRoom.height);
+        Vector3 FrontDoorPosition = new Vector3(EscapeRoom.xzPosition.x + EscapeRoom.width / 2, wallHeight / 2, EscapeRoom.xzPosition.z + EscapeRoom.height);
         // 创建右方的逃生门
         CreateDoor(RightDoorPosition, 0.1f, true, "Exit");
         /* CreateDoor(FrontDoorPosition, 0.1f, false, "Exit");*/

@@ -81,6 +81,15 @@ public class ComplexityControl : MonoBehaviour
             Debug.LogError("划分的数量必须>=1");
         }
     }
+
+    public void BeginGenerationJsonLoad(string filename,string layoutname)
+    {
+         Debug.Log("BeginGenerationJson");
+        
+            buildingGeneration.ClearPreviousRooms();
+            buildingGeneration.GenerateRoomsJsonLoad( filename,layoutname);  // 调用房间生成方法
+        
+    }
     // 随机将 number1 划分为 number2 个部分
     //采用平滑分配策略：每个房间的基础面积 baseArea 被均匀计算为总面积除以房间数量。然后在此基础上应用随机的调整值，确保分配相对平衡。
     //波动范围：：波动范围 maxAdjustment 被设置为剩余面积的一半（remaining / 2f），这样可以避免极端的随机变化。并且通过 rand.NextDouble() 控制波动的幅度

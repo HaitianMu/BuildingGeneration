@@ -91,13 +91,13 @@ public partial class BuildingControl : MonoBehaviour
 
             // 创建左房间和右房间
             Room leftRoom = new Room(
-                new Vector3(room.XZposition.x,0,room.XZposition.z),
+                new Vector3(room.xzPosition.x,0,room.xzPosition.z),
                 splitWidth,
                 room.height,
                 splitWidth*room.height);
 
             Room RightRoom= new Room(
-                new Vector3(room.XZposition.x+splitWidth,0,room.XZposition.z),
+                new Vector3(room.xzPosition.x+splitWidth,0,room.xzPosition.z),
                 room.width-splitWidth,
                 room.height,
                 (room.width - splitWidth)*room.height);
@@ -129,13 +129,13 @@ public partial class BuildingControl : MonoBehaviour
 
             // 创建下房间和上房间
             Room bottomRoom = new Room(
-                new Vector3(room.XZposition.x, 0, room.XZposition.z), 
+                new Vector3(room.xzPosition.x, 0, room.xzPosition.z), 
                 room.width, 
                 splitHeight,
                 room.width*splitHeight);
 
             Room topRoom = new Room(
-                new Vector3(room.XZposition.x, 0, room.XZposition.z+splitHeight),
+                new Vector3(room.xzPosition.x, 0, room.xzPosition.z+splitHeight),
                 room.width,
                 room.height - splitHeight, 
                 room.width * (room.height - splitHeight));
@@ -171,13 +171,11 @@ public partial class BuildingControl : MonoBehaviour
     public void CreateRoomBinary(List<Room> roomlist)
     {
       //  Debug.Log("执行了在场景中创建房间的函数");
-        int num = 0;
         foreach (Room room in roomlist) {
-             GameObject Realroom=  CreateRoomInScene(room.XZposition.x, room.XZposition.z, room.width, room.height);
+             GameObject Realroom=  CreateRoomInScene(room.xzPosition.x, room.xzPosition.z, room.width, room.height,room.roomName);
             AddObjectToList(Realroom);
-            //Debug.Log("房间"+num+"的XZ坐标为"+room.XZposition.x+"，"+room.XZposition.z);
+            //Debug.Log("房间"+num+"的XZ坐标为"+room.xzPosition.x+"，"+room.xzPosition.z);
             //Debug.Log("房间" + num + "的长和高为" + room.width + "，" + room.height);
-            num++;
         }
     }
 
@@ -232,10 +230,11 @@ public partial class BuildingControl : MonoBehaviour
         return UnityEngine.Random.Range(minSplit, maxSplit);
     }
 
-    public GameObject CreateRoomInScene(float x, float z, float width, float height)
+    public GameObject CreateRoomInScene(float x, float z, float width, float height,string roomName)
     {
         // 创建房间的主体
-        GameObject room = new GameObject("Room" + RoomNum);
+
+        GameObject room = new GameObject(roomName);
         room.tag = "Room";
         room.transform.parent = ParentObject.transform;
         RoomNum++;
@@ -271,7 +270,7 @@ public partial class BuildingControl : MonoBehaviour
         foreach (Room room in roomList)
         {
             // 计算房间右上角的坐标之和
-            float sum = room.XZposition.x + room.width + room.XZposition.z + room.height;
+            float sum = room.xzPosition.x + room.width + room.xzPosition.z + room.height;
 
             // 如果当前房间的右上角坐标之和更大，则更新最大值和房间
             if (sum > maxSum)
@@ -284,7 +283,7 @@ public partial class BuildingControl : MonoBehaviour
         // 输出找到的房间信息
         if (escapeRoom != null)
         {
-            //Debug.Log($"找到右上角的房间：位置=({escapeRoom.XZposition.x}, {escapeRoom.XZposition.z}), 宽度={escapeRoom.width}, 高度={escapeRoom.height}");
+            //Debug.Log($"找到右上角的房间：位置=({escapeRoom.xzPosition.x}, {escapeRoom.xzPosition.z}), 宽度={escapeRoom.width}, 高度={escapeRoom.height}");
         }
         else
         {

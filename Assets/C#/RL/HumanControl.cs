@@ -313,7 +313,6 @@ public partial class HumanControl: MonoBehaviour
                     continue;
                 }
             }
-
         }
         // 再筛一遍需要比较后排除的
         if (targetDoorCandidates.Count > 1)
@@ -331,15 +330,6 @@ public partial class HumanControl: MonoBehaviour
         }
         return exit;
     }
-    private void FilterLeaderCandidates(ref List<GameObject> leaderCandidates)
-    {
-        myLeader = leaderCandidates[0].gameObject;
-    }
-    private bool IsOnNavMesh(Vector3 targetPosition)
-    {
-        return NavMesh.SamplePosition(targetPosition, out NavMeshHit _, 0.1f, 1);
-    }
-
     private Vector3 GetCrossDoorDestination(GameObject targetDoor)//去到穿过门的位置
     {
         //Debug.Log("执行了GetCrossDoorDestionation函数");

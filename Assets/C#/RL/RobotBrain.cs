@@ -68,7 +68,7 @@ public class RobotBrain : Agent
        
         AddReward(-RewardDelayRate * floor_human);
         LogReward("持续时间惩罚", -RewardDelayRate * floor_human );
-        RequestDecision();
+        //RequestDecision();
 
         if (myEnv.isTraining is false)
         {
@@ -88,7 +88,7 @@ public class RobotBrain : Agent
             }
         }
     }//定帧更新
-public override void OnEpisodeBegin()
+/*public override void OnEpisodeBegin()
     {
         Debug.Log("一次训练开始了");
         myEnv.CleanTheScene();
@@ -102,7 +102,7 @@ public override void OnEpisodeBegin()
         myEnv.AddRobotBrain();//添加机器人大脑
         //myEnv.cachedDoorPositions=myEnv.GetAllDoorPositions();//添加门的位置信息
         myEnv.cachedRoomPositions=myEnv.GetAllRoomPositions();//添加房间的位置信息
-    }
+    }*/
 
     public override void CollectObservations(VectorSensor sensor)
     {
@@ -299,24 +299,28 @@ public override void OnEpisodeBegin()
     }
     private void GMoveAgent()
     {
+        print("移动机器人函数");
         Vector3 targetPosition = new();
         Vector3 robotPosition = robot.transform.position;
         //print("机器人的跟随者数量为：" + robotInfo.myDirectFollowers.Count);
         if (robotInfo.robotFollowerCounter > 0)//如果当前机器人当前跟随者大于0个，前往出口
         {
+            print("跟随人类数量大于0");
             //随机一个出口，将人送到出口
             //print("2机器人检测到的出口数量为："+myEnv.Exits.Count);
             targetPosition = GetCrossDoorDestination(myEnv.Exits[0].gameObject);
         }
         else
         {
+            print("没有人类跟随，寻找距离最近的人类");
             //找到离机器人最近的人类，并朝其进行移动
             float minDist = int.MaxValue;
             //float minDist = 18f;
             foreach (HumanControl human in myEnv.personList)
             {
                 Vector3 humanPosition = human.transform.position - new Vector3(0, 0.5f, 0);
-                if (human.isActiveAndEnabled is false || Mathf.Abs(humanPosition.y - robotPosition.y) > 1 || humanPosition.x < -20 || humanPosition.z > 20)
+                if (human.isActiveAndEnabled is false
+                    /*|| Mathf.Abs(humanPosition.y - robotPosition.y) > 1 || humanPosition.x < -20 || humanPosition.z > 20*/)
                     continue;
                 if (Vector3.Distance(humanPosition, robotPosition) < minDist)
                 {
@@ -324,6 +328,7 @@ public override void OnEpisodeBegin()
                     targetPosition = humanPosition + human.transform.forward ;
                 }
             }
+
             robotDestinationCache = targetPosition;
             robotNavMeshAgent.SetDestination(robotDestinationCache);
             return;

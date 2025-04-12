@@ -40,19 +40,28 @@ public partial class EnvControl : MonoBehaviour
     public int StepCount;//计数器
     public int MaxStep;//最大步数
 
+    public int layoutNum;
 
     private void Start()
     {
-
-        //Debug.Log("Env的start函数");
+        layoutNum = 10; //5有bug
+        Debug.Log("Env的start函数");
 
         if (currentFloorhuman == 0)
         {
             CleanTheScene();
-            int number2 = UnityEngine.Random.Range(8, 15); // 划分的房间数量
+            int number2 = 15; // 划分的房间数量
             TotalSize = 900;
             RoomNum = number2;
-            complexityControl.BeginGenerationBinary(TotalSize, RoomNum);
+            string filename = "layout_900_15";
+            string[] name = { "layout1", "layout2", "layout3", "layout4",
+                "apartment", "family_house", "clinic", "elementary_school", "hospital_er","tech_office", "shopping_mall", "general_hospital" };
+            //string layoutname = name[layoutNum];
+            string layoutname = "15rooms_2";
+            print("读取的布局名称为：" + layoutname);
+            complexityControl.BeginGenerationJsonLoad(filename,layoutname); //在这里指定加载数据的文件
+
+
             surface.BuildNavMesh();//生成导航
                                    //AddRobot();
             AddPerson(10);
@@ -75,13 +84,48 @@ public partial class EnvControl : MonoBehaviour
 
     private void FixedUpdate()
     {
-        StepCount++;
-        if(StepCount > MaxStep)
+      /*  Debug.Log("Env的start函数");
+
+        if (currentFloorhuman == 0)
         {
-            print("超出次数限制");
-            BrainList[0].EpisodeInterrupted();//超出次数，结束当前回合
-            StepCount = 0;
-        }
+            CleanTheScene();
+            int number2 = 15; // 划分的房间数量
+            TotalSize = 900;
+            RoomNum = number2;
+            string filename = "layout_900_15";
+            string[] name = { "layout1", "layout2", "layout3", "layout4",
+                "apartment", "family_house", "clinic", "elementary_school", "hospital_er","tech_office", "shopping_mall", "general_hospital" };
+            string layoutname = name[layoutNum];//5、7、8、9、10、11布局有重叠
+            print("读取的布局名称为：" + layoutname);
+            complexityControl.BeginGenerationJsonLoad(filename, layoutname); //在这里指定加载数据的文件
+
+
+            surface.BuildNavMesh();//生成导航
+                                   //AddRobot();
+            AddPerson(10);
+            AddRobot();//添加机器人
+            foreach (HumanControl human in personList)//统计当前楼层的人数
+            {
+                if (human.isActiveAndEnabled)
+                {
+                    currentFloorhuman++;
+                }
+                //Debug.Log(currentFloorhuman);
+            }
+            AddExits();//添加出口，以便于后续机器人导航使用
+            AddRobotBrain();//添加机器人大脑
+
+            StepCount = 0;//训练决策数目
+            MaxStep = 5000;
+            layoutNum++;
+        }*/
+        /* StepCount++;
+         if(StepCount > MaxStep)
+         {
+             print("超出次数限制");
+             BrainList[0].EpisodeInterrupted();//超出次数，结束当前回合
+             StepCount = 0;
+         }*/
     }
 
 
@@ -205,11 +249,13 @@ public partial class EnvControl : MonoBehaviour
         // 在场景中生成num个机器人，并把他们加入到List中
             GameObject RobotParent = GameObject.Find("RobotList");
             Vector3 spawnPosition = Vector3.zero;
-            // 尝试找到一个没有碰撞的位置
-            // 随机生成位置
-            float randomX = UnityEngine.Random.Range(1f, complexityControl.buildingGeneration.totalWidth);
-            float randomZ = UnityEngine.Random.Range(1f, complexityControl.buildingGeneration.totalHeight);
-            spawnPosition = new Vector3(randomX, 0.5f, randomZ);
+        // 尝试找到一个没有碰撞的位置
+        // 随机生成位置
+        //标注掉的只适用于矩形布局
+        /*float randomX = UnityEngine.Random.Range(1f, complexityControl.buildingGeneration.totalWidth);
+        float randomZ = UnityEngine.Random.Range(1f, complexityControl.buildingGeneration.totalHeight);*/
+
+          spawnPosition = GetRandomPosInLayout();
             // 实例化机器人
             GameObject Robot = Instantiate(RobotPrefab, spawnPosition, Quaternion.identity);//实例化机器人的位置
             RobotList.Add(Robot.GetComponent<RobotControl>()); //将机器人加入列表
@@ -243,10 +289,13 @@ public partial class EnvControl : MonoBehaviour
             // 尝试找到一个没有碰撞的位置
             while (!positionFound && attempts < 100) // 最多尝试100次
             {
-                // 随机生成位置
+                /*// 随机生成位置.布局外围是固定矩形
                 float randomX = UnityEngine.Random.Range(1f, complexityControl.buildingGeneration.totalWidth);
-                float randomZ = UnityEngine.Random.Range(1f, complexityControl.buildingGeneration.totalHeight);
-                spawnPosition = new Vector3(randomX, 0.5f, randomZ);
+                float randomZ = UnityEngine.Random.Range(1f, complexityControl.buildingGeneration.totalWidth);
+                spawnPosition = new Vector3(randomX, 0.5f, randomZ);*/
+
+
+                spawnPosition = GetRandomPosInLayout();
 
                 // 检测是否与其他对象碰撞
                 float radius = 0.5f; // 人类的碰撞半径
@@ -279,7 +328,7 @@ public partial class EnvControl : MonoBehaviour
 
        // Debug.Log("执行生成人类函数");
     }
-    public void AddExits()
+    public void AddExits() //将出口添加到出口列表当中
     {
          GameObject Exit = GameObject.Find("Exit");
         if (Exit != null)
@@ -311,5 +360,26 @@ public partial class EnvControl : MonoBehaviour
             positions.Add(roomObj.transform.position);
         }
         return positions;
+    }
+
+    public Vector3 GetRandomPosInLayout() {
+        //随机选取一个房间，在随机房间内选取随机点
+        List<Room> rooms = complexityControl.buildingGeneration.roomList;
+        System.Random _random = new System.Random();
+   
+        // _random.Next(maxValue)
+        //作用：返回 0 到 maxValue-1 之间的随机整数
+       Room room = rooms[_random.Next(rooms.Count)];
+        // 计算房间边界
+        float xMin = room.xzPosition.x+0.2f;
+        float zMin = room.xzPosition.z+0.2f;
+        float xMax = xMin + room.width-0.2f;
+        float zMax = zMin + room.height-0.2f;
+        // 生成随机点
+        float x = (float)(xMin + _random.NextDouble() * (xMax - xMin));
+        float z = (float)(zMin + _random.NextDouble() * (zMax - zMin));
+        Vector3 RandomPos = Vector3.zero;
+        RandomPos=new Vector3(x,0,z);
+        return RandomPos;
     }
 }
