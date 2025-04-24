@@ -10,7 +10,7 @@ public partial class BuildingControl : MonoBehaviour
 {
 
     [System.Serializable]
-    public class Layout  //布局数据类，用来读取json数据
+    public class Layout                 //布局数据类，用来读取json数据
     {
         public string name;
         public String ExitRoom;
@@ -161,7 +161,6 @@ public partial class BuildingControl : MonoBehaviour
     private void CreateDoorBetweenRooms(Room[][] cN)
     {
         float distanceThreshold = 0.1f;
-        float minOverlap = 1f; // 最小重叠距离
 
         for (int i = 0; i < cN.Length; i++)
         {

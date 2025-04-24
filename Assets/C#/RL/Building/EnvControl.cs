@@ -14,6 +14,10 @@ public partial class EnvControl : MonoBehaviour
     public List<RobotControl> RobotList = new();
     // 机器人大脑列表
     public List<RobotBrain> BrainList = new();
+
+    public List<FireControl>FireList = new();
+
+
     //环境中的出口
     public List<GameObject> Exits=new();
     //存储房间和门的位置信息
@@ -25,6 +29,13 @@ public partial class EnvControl : MonoBehaviour
     public GameObject HumanPrefab;//生成人类用到的组件
     public GameObject RobotPrefab;//添加机器人用到的组件
     public GameObject BrainPerfab;//机器人大脑预制体
+    public GameObject FirePerfab; //火焰预制体
+
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    public GameObject RobotParent;//机器人的父物体，减少性能消耗
+    public GameObject FireParent;//机器人的父物体，减少性能消耗
+    public GameObject RobotBrainParent;//机器人大脑的父物体，减少性能消耗，但目前这个用不到
+    public GameObject humanParent;//机器人的父物体，减少性能消耗
 
     public float TotalSize;//区域总大小
     public int RoomNum;//房间数目
@@ -32,7 +43,9 @@ public partial class EnvControl : MonoBehaviour
     public bool isTraining;
     // 是否使用机器人
     public bool useRobot;
-
+    //是否使用火焰智能体
+    public bool useFireAgent;
+   
 
     /*展示Demo使用，用于场景重置!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
     public int currentFloorhuman=0;
@@ -41,6 +54,17 @@ public partial class EnvControl : MonoBehaviour
     public int MaxStep;//最大步数
 
     public int layoutNum;
+
+    private int fireSpawnInterval = 100; // 可配置的生成间隔
+
+    private Transform fireParent; // 缓存父物体
+
+   //引入火焰机制4.20 ！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
+    //手动添加火焰时的火焰位置缓存
+    public List<Vector3> FirePosition;
+    //添加的火焰数量
+    public int FireNum;
+
 
     private void Start()
     {
@@ -55,15 +79,18 @@ public partial class EnvControl : MonoBehaviour
             RoomNum = number2;
             string filename = "layout_900_15";
             string[] name = { "layout1", "layout2", "layout3", "layout4",
-                "apartment", "family_house", "clinic", "elementary_school", "hospital_er","tech_office", "shopping_mall", "general_hospital" };
+                "apartment", "family_house", "clinic", "elementary_school", "hospital_er","tech_office", "shopping_mall" };
             //string layoutname = name[layoutNum];
-            string layoutname = "15rooms_2";
+            string layoutname = "shopping_mall";
             print("读取的布局名称为：" + layoutname);
+
+            //!!!!!!!!!!!!!!!!!!!!!!!!场景实现
             complexityControl.BeginGenerationJsonLoad(filename,layoutname); //在这里指定加载数据的文件
-
-
+            AddExits();//添加出口，以便于后续机器人导航使用
             surface.BuildNavMesh();//生成导航
-                                   //AddRobot();
+            //!!!!!!!!!!!!!!!!!!!!!!!!场景实现
+
+
             AddPerson(10);
             AddRobot();//添加机器人
             foreach (HumanControl human in personList)//统计当前楼层的人数
@@ -74,51 +101,79 @@ public partial class EnvControl : MonoBehaviour
                 }
                 //Debug.Log(currentFloorhuman);
             }
-            AddExits();//添加出口，以便于后续机器人导航使用
+           
             AddRobotBrain();//添加机器人大脑
-
+            /*  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
             StepCount = 0;//训练决策数目
             MaxStep = 5000;
+
+            /*  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
+            //手动添加的火焰位置
+            FirePosition.Add(new Vector3(3, 0, 44));
+            FirePosition.Add(new Vector3(32, 0, 44));
+            FireNum = 0;
         }
     }
 
     private void FixedUpdate()
     {
-      /*  Debug.Log("Env的start函数");
-
-        if (currentFloorhuman == 0)
+        StepCount++;
+        if (StepCount % 200==0) 
         {
-            CleanTheScene();
-            int number2 = 15; // 划分的房间数量
-            TotalSize = 900;
-            RoomNum = number2;
-            string filename = "layout_900_15";
-            string[] name = { "layout1", "layout2", "layout3", "layout4",
-                "apartment", "family_house", "clinic", "elementary_school", "hospital_er","tech_office", "shopping_mall", "general_hospital" };
-            string layoutname = name[layoutNum];//5、7、8、9、10、11布局有重叠
-            print("读取的布局名称为：" + layoutname);
-            complexityControl.BeginGenerationJsonLoad(filename, layoutname); //在这里指定加载数据的文件
-
-
-            surface.BuildNavMesh();//生成导航
-                                   //AddRobot();
-            AddPerson(10);
-            AddRobot();//添加机器人
-            foreach (HumanControl human in personList)//统计当前楼层的人数
+            //(32,0,44) 右上角房间
+            //(3,0,44) 左上角房间
+            if (FireNum<FirePosition.Count)
             {
-                if (human.isActiveAndEnabled)
-                {
-                    currentFloorhuman++;
-                }
-                //Debug.Log(currentFloorhuman);
+                AddFire(FirePosition[FireNum]);
+                FireNum++;
+                StepCount++;
             }
-            AddExits();//添加出口，以便于后续机器人导航使用
-            AddRobotBrain();//添加机器人大脑
+            else { StepCount++; }
+        }
+        if (StepCount % 100 == 0)//每过一定帧更新导航地图
+        {
+            var surface = FindObjectOfType<NavMeshSurface>();
+            if (surface != null)
+            {
+                surface.UpdateNavMesh(surface.navMeshData);
+            }
+            StepCount++;
+        }
+        /*  Debug.Log("Env的start函数");
 
-            StepCount = 0;//训练决策数目
-            MaxStep = 5000;
-            layoutNum++;
-        }*/
+          if (currentFloorhuman == 0)
+          {
+              CleanTheScene();
+              int number2 = 15; // 划分的房间数量
+              TotalSize = 900;
+              RoomNum = number2;
+              string filename = "layout_900_15";
+              string[] name = { "layout1", "layout2", "layout3", "layout4",
+                  "apartment", "family_house", "clinic", "elementary_school", "hospital_er","tech_office", "shopping_mall", "general_hospital" };
+              string layoutname = name[layoutNum];//5、7、8、9、10、11布局有重叠
+              print("读取的布局名称为：" + layoutname);
+              complexityControl.BeginGenerationJsonLoad(filename, layoutname); //在这里指定加载数据的文件
+
+
+              surface.BuildNavMesh();//生成导航
+                                     //AddRobot();
+              AddPerson(10);
+              AddRobot();//添加机器人
+              foreach (HumanControl human in personList)//统计当前楼层的人数
+              {
+                  if (human.isActiveAndEnabled)
+                  {
+                      currentFloorhuman++;
+                  }
+                  //Debug.Log(currentFloorhuman);
+              }
+              AddExits();//添加出口，以便于后续机器人导航使用
+              AddRobotBrain();//添加机器人大脑
+
+              StepCount = 0;//训练决策数目
+              MaxStep = 5000;
+              layoutNum++;
+          }*/
         /* StepCount++;
          if(StepCount > MaxStep)
          {
@@ -243,11 +298,23 @@ public partial class EnvControl : MonoBehaviour
         }
         cachedDoorPositions.Clear();
         cachedRoomPositions.Clear();
+
+        if (FireList.Count > 0)
+        {
+            foreach (var Fire in FireList)
+            {
+                if (Fire != null && Fire.gameObject != null)
+                {
+                    Destroy(Fire.gameObject);
+                }
+            }
+            FireList.Clear();
+        }
+
     }
     public void AddRobot()  //在这里动态添加机器人，以确保机器人是在环境生成之后才添加上去的，以确保机器人导航的正常使用
     {
         // 在场景中生成num个机器人，并把他们加入到List中
-            GameObject RobotParent = GameObject.Find("RobotList");
             Vector3 spawnPosition = Vector3.zero;
         // 尝试找到一个没有碰撞的位置
         // 随机生成位置
@@ -277,9 +344,8 @@ public partial class EnvControl : MonoBehaviour
     }
     public void AddPerson(int num)
     {
+        print("添加人类函数");
         // 在场景中生成num个人类，并把他们加入到personList中
-        GameObject humanParent = GameObject.Find("HumanList");
-
         for (int i = 0; i < num; i++)
         {
             bool positionFound = false;
@@ -316,9 +382,9 @@ public partial class EnvControl : MonoBehaviour
                 // 实例化人类
                 GameObject Person = Instantiate(HumanPrefab, spawnPosition, Quaternion.identity);
                 personList.Add(Person.GetComponent<HumanControl>());
-                Person.GetComponent<HumanControl>().Start();//初始化人类的各个变量
                 Person.transform.parent = humanParent.transform;
                 Person.GetComponent<HumanControl>().myEnv = this;
+                Person.GetComponent<HumanControl>().Start();//初始化人类的各个变量  
             }
             else
             {
@@ -340,26 +406,19 @@ public partial class EnvControl : MonoBehaviour
        
     }
 
-    public List<Vector3> GetAllRoomPositions()
+    public void AddFire(Vector3 FirePosition) //添加火焰，只需传入x，z坐标即可
     {
-        print("执行了房间位置缓存函数");
-        List<Vector3> positions = new List<Vector3>();
-        foreach (GameObject roomObj in GameObject.FindGameObjectsWithTag("Floor"))
-        {
-            positions.Add(roomObj.transform.position);
-            //print("房间位置为："+ roomObj.transform.position);
-        }
-        return positions;
-    }
+        //随机生成火焰位置
+        /*Vector3 spawnPosition = Vector3.zero;
+        spawnPosition = GetRandomPosInLayout();
+        spawnPosition.x = Mathf.Round(spawnPosition.x);
+        spawnPosition.z = Mathf.Round(spawnPosition.z);//四舍五入取整*/
 
-    public List<Vector3> GetAllDoorPositions()
-    {
-        List<Vector3> positions = new List<Vector3>();
-        foreach (GameObject roomObj in GameObject.FindGameObjectsWithTag("Door"))
-        {
-            positions.Add(roomObj.transform.position);
-        }
-        return positions;
+        GameObject Fire = Instantiate(FirePerfab, FirePosition+ new Vector3(0,0.5f,0), Quaternion.identity);
+        FireList.Add(Fire.GetComponent<FireControl>());
+        Fire.transform.parent = FireParent.transform;
+        Fire.GetComponent<FireControl>().myEnv = this;
+       
     }
 
     public Vector3 GetRandomPosInLayout() {
@@ -371,10 +430,10 @@ public partial class EnvControl : MonoBehaviour
         //作用：返回 0 到 maxValue-1 之间的随机整数
        Room room = rooms[_random.Next(rooms.Count)];
         // 计算房间边界
-        float xMin = room.xzPosition.x+0.2f;
-        float zMin = room.xzPosition.z+0.2f;
-        float xMax = xMin + room.width-0.2f;
-        float zMax = zMin + room.height-0.2f;
+        float xMin = room.xzPosition.x+2f;
+        float zMin = room.xzPosition.z+2f;
+        float xMax = xMin + room.width-2f;
+        float zMax = zMin + room.height-2f;
         // 生成随机点
         float x = (float)(xMin + _random.NextDouble() * (xMax - xMin));
         float z = (float)(zMin + _random.NextDouble() * (zMax - zMin));

@@ -20,14 +20,31 @@ public partial class HumanControl: MonoBehaviour
     public Vector3 myDestination;     // 移动的目的地 
     public bool isReturnFromLastDoor;  // 是否从死胡同返回
     public String myBehaviourMode; //该人类的行为模式
+
     public int myFollowerCounter;  //跟随者的数量
+
     public List<GameObject> RbtList;  //发现的机器人列表
     public GameObject myLeader;//领导者目前只能是机器人 1.19
 
-
+    private const float FOLLOWER_DISTANCE_THRESHOLD = 0.5f; //切换状态的最小距离
     //奖励相关参数
     public float health;//人类血量
-    public float DelayRate = 0.01f;//人类血量衰减速率
+    private float DelayRate = 0.01f;//人类血量衰减速率
+
+
+    //人类恐慌状态相关参数
+    [SerializeField] float currentSpeed;//人类的目前速度
+    [SerializeField] float exitDistance;//距离出口的距离
+    [SerializeField] float startDistanceToExit;//场景开始时距离出口的距离
+
+    [SerializeField] float startdesiredSpeed;//人类冷静状态下的期望速度
+    [SerializeField] float MaxSpeed;         //人类恐慌状态下的期望速度
+
+    public float panicLevel;  //恐慌等级
+    public int CurrentState;    //人类的行为状态，
+                                //0是理性模式：跟随机器人或自主导航
+                                //1是焦虑模式：随机路径偏移
+                                //2是恐慌模式：完全随机移动
 
     public void Start()
     {
@@ -39,21 +56,30 @@ public partial class HumanControl: MonoBehaviour
         myTargetDoor = null;
         lastDoorWentThrough = null;
         health = 100.0f;
+
+
+        //恐慌值计算的参数!!!!
+        UsePanic=true;
+        currentSpeed = 10;
+        startDistanceToExit = Vector3.Distance(this.transform.position, myEnv.Exits[0].transform.position);
+        startdesiredSpeed = _myNavMeshAgent.speed;//初始期望速度，与预制体中的速度一致，8。
+        MaxSpeed = 12f;    //人类恐慌状态下的最大速度
+        CurrentState = 0;  //初始状态设置为理性模式
+        //恐慌移动!!!!!!!
+        // 每个个体初始化不同的延迟偏移量（0 - 2秒）
+        _panicDelayOffset = Random.Range(0f, 2f);
+
+        robotDetectTime = 0;
     }
     private void FixedUpdate()
     {
         //每个人刚开始都是独立的领导者，但是随着程序的进行，
         //当看到机器人时，人类会进行跟随
-        switch (myBehaviourMode)
+        if (UsePanic)
         {
-            case "Follower":
-                FollowerUpdate();
-                break;
-            case "Leader":
-                LeaderUpdate();
-                break;
+            UpdatePanicLevel();    //更新人类的恐慌度等级
         }
-
+        UpdateBehaviorModel(); //更新行为模式
 
         //在这里修改人类的生命值
         if (health > 0)
@@ -72,7 +98,6 @@ public partial class HumanControl: MonoBehaviour
             //TO ADD
             gameObject.SetActive(false);
         }
-
     }
 
     private List<Vector3> GetVision(int visionWidth, int visionDiff)//生成人类视线，本质是一个向量数组
@@ -97,15 +122,15 @@ public partial class HumanControl: MonoBehaviour
     {
         if (myTargetDoor is null)
         {
-            // print("当前存在计划前往的门，正在向门对面移动");
-
             //先扫描视线里有没有机器人，有的话就直接进行跟随
             Vector3 myPosition = transform.position;
+
             myPosition.y -= 0.5f;
+           // print(myPosition.y);
             float distanceRemain = Vector3.Distance(myPosition, myDestination);
-            if (distanceRemain > 0.5f)
+            if (distanceRemain > 0.1f)
             {//print($"距离门对面还有{distanceRemain}米，扫描沿路是否有合适的领导者");
-                List<GameObject> leaderCandidates = GetCandidate(new List<string> { "Human", "Robot" }, 360, visionLimit).Item1;
+                List<GameObject> leaderCandidates = GetCandidate(new List<string> { "Human", "Robot" }, 120, visionLimit).Item1;
                 if (leaderCandidates.Count > 0)
                 {
                     //print("发现了符合追随条件的人类或者机器人，进入追随者模式");
@@ -131,7 +156,7 @@ public partial class HumanControl: MonoBehaviour
 
             //目前不知道去哪，而且视线里没有找到机器人，开始自己乱逛
                 //print("当前没有计划前往的门，开始扫描，然后筛选");
-                (List<GameObject> doorCandidates, List<Vector3> unknownDirections) = GetCandidate(new List<string> { "Door", "Exit" }, 360, visionLimit);
+                (List<GameObject> doorCandidates, List<Vector3> unknownDirections) = GetCandidate(new List<string> { "Door", "Exit" }, 120, visionLimit);
             GameObject exit = FilterTargetDoorCandidates(ref doorCandidates, unknownDirections.Count > 0 ? "Explore" : "Normal");
             if (exit is not null)
             {
@@ -163,9 +188,10 @@ public partial class HumanControl: MonoBehaviour
             }
             else if (doorCandidates.Count > 0)
             {
-               // print("候选的门中不存在出口，随机选择一扇门作为移动目标");
+               // print("候选的门中不存在出口，随机选择一扇可通过的门作为移动目标");
 
-                myTargetDoor = doorCandidates[Random.Range(0, doorCandidates.Count)];//Random.Range(0, doorCandidates.Count)
+                myTargetDoor = doorCandidates[Random.Range(0, doorCandidates.Count)];//这里是根据标签找到所有的门，这里找到的门一定是可以使用的，因为烧毁门的tag是BurnedDoor，
+                                                                                     //Random.Range(0, doorCandidates.Count)
                // print("选择的门是：" + myTargetDoor.transform.name);
                 myDestination = GetCrossDoorDestination(myTargetDoor);
 
@@ -186,38 +212,44 @@ public partial class HumanControl: MonoBehaviour
             }
             else
             {
-                // print("当前存在计划前往的门，正在向门对面移动");
-                Vector3 myPosition = transform.position;
-                myPosition.y -= 0.5f;
-                float distanceRemain = Vector3.Distance(myPosition, myDestination);
-                if (distanceRemain > 0.5f)
-                {//print($"距离门对面还有{distanceRemain}米，扫描沿路是否有合适的领导者");
-                    List<GameObject> leaderCandidates = GetCandidate(new List<string> { "Human", "Robot" }, 360, visionLimit).Item1;
-                    if (leaderCandidates.Count > 0)
-                    {
-                        //print("发现了符合追随条件的人类或者机器人，进入追随者模式");
+                //检查门是否被烧毁
+                if (myTargetDoor.GetComponent<DoorControl>().isBurnt == false)
+                {
+                    // print("当前存在计划前往的门，正在向门对面移动");
+                    Vector3 myPosition = transform.position;
+                    myPosition.y -= 0.5f;
+                    float distanceRemain = Vector3.Distance(myPosition, myDestination);
+                    if (distanceRemain > 0.5f)
+                    {//print($"距离门对面还有{distanceRemain}米，扫描沿路是否有合适的领导者");
+                        List<GameObject> leaderCandidates = GetCandidate(new List<string> { "Human", "Robot" }, 120, visionLimit).Item1;
+                        if (leaderCandidates.Count > 0)
+                        {
+                            //print("发现了符合追随条件的人类或者机器人，进入追随者模式");
 
-                        myLeader = leaderCandidates[0];
+                            myLeader = leaderCandidates[0];
 
-                        if (myLeader.GetComponent<RobotControl>().isRunning)
-                        {//如果机器人在工作，就进行跟随
-                         //print("找到了在工作的机器人，我的领导者是：" + leaderCandidates[0].name);
-                            if (!myLeader.GetComponent<RobotControl>().myDirectFollowers.Contains(gameObject.GetComponent<HumanControl>()))
-                            {
-                                //print(this.name + "将自己加入机器人的跟随者列表");
-                                myLeader.GetComponent<RobotControl>().myDirectFollowers.Add(gameObject.GetComponent<HumanControl>());//将自己加入机器人的跟随者列表
+                            if (myLeader.GetComponent<RobotControl>().isRunning)
+                            {//如果机器人在工作，就进行跟随
+                             //print("找到了在工作的机器人，我的领导者是：" + leaderCandidates[0].name);
+                                if (!myLeader.GetComponent<RobotControl>().myDirectFollowers.Contains(gameObject.GetComponent<HumanControl>()))
+                                {
+                                    //print(this.name + "将自己加入机器人的跟随者列表");
+                                    myLeader.GetComponent<RobotControl>().myDirectFollowers.Add(gameObject.GetComponent<HumanControl>());//将自己加入机器人的跟随者列表
+                                }
+                                //print(myLeader.GetComponent<Robot>().myDirectFollowers);
+                                SwitchBehaviourMode();
                             }
-                            //print(myLeader.GetComponent<Robot>().myDirectFollowers);
-                            SwitchBehaviourMode();
+                            return;
                         }
+                    }
+                    else
+                    {  //print($"距离门对面还有{distanceRemain}米，初步认为已经认为已经到达目的地，开始重新扫描");
+                        myTargetDoor = null;
                         return;
                     }
                 }
-                else
-                {  //print($"距离门对面还有{distanceRemain}米，初步认为已经认为已经到达目的地，开始重新扫描");
-                    myTargetDoor = null;
-                    return;
-                }
+                else { myTargetDoor = null; }
+
             }
         }
     }
@@ -227,7 +259,7 @@ public partial class HumanControl: MonoBehaviour
         //print("切换模式后，我的追随者是：" + myLeader.name);
         Vector3 leaderPosition = myLeader.transform.position;
 
-        List<GameObject> exitList = GetCandidate(new List<string> { "Exit" }, 360, visionLimit).Item1;
+        List<GameObject> exitList = GetCandidate(new List<string> { "Exit" }, 120, visionLimit).Item1;
         //在跟随的过程中，持续进行检测是否有出口，有的话就直接离开,没有的话就继续跟随机器人
         if (exitList.Count > 0)
         {
@@ -308,7 +340,6 @@ public partial class HumanControl: MonoBehaviour
                 // 现在还有没探索过的方向，且这个门在记忆队列里
                 if (filterMode is "Explore" && _doorMemoryQueue.Contains(targetDoorCandidates[doorCandidateIndex]))
                 {
-
                     targetDoorCandidates.Remove(targetDoorCandidates[doorCandidateIndex]);
                     continue;
                 }
@@ -341,14 +372,14 @@ public partial class HumanControl: MonoBehaviour
             Vector3 doorPosition = targetDoor.transform.position + new Vector3(0, -1.5f, 0);
             switch (doorDirection)
             {
-                case "Horizontal":
+                case "Vertical":
                     if (myPosition.z < doorPosition.z)
                         return doorPosition + new Vector3(0, 0, 2);
-                    return doorPosition - new Vector3(0, 0, 1);
-                case "Vertical":
+                    return doorPosition - new Vector3(0, 0, 2);
+                case "Horizontal":  //水平
                     if (myPosition.x < doorPosition.x)
                         return doorPosition + new Vector3(2, 0, 0);
-                    return doorPosition - new Vector3(1, 0, 0);
+                    return doorPosition - new Vector3(2, 0, 0);
                 default:
                     return myPosition;
             }
@@ -402,6 +433,7 @@ public partial class HumanControl: MonoBehaviour
                 if (_doorMemoryQueue.Count > 4)
                     _doorMemoryQueue.Dequeue();
                 break;
+
             case "Exit":
                 // print("我成功逃离了");
                 /*  myEnv.personList.Remove(this);*/
@@ -411,8 +443,12 @@ public partial class HumanControl: MonoBehaviour
                 //在这里给予机器人奖励
                 myEnv.BrainList[0].AddReward(health+20);
                 myEnv.BrainList[0].LogReward("单个人类逃生奖励", health + 20);
+                break;
 
-
+            case "Fire":
+                myEnv.currentFloorhuman--;
+                this.health -= 5;  //人类直接嗝屁
+                print("我碰到了火焰，健康值下降");
                 break;
         }
     }

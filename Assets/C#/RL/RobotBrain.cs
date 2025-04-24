@@ -39,52 +39,55 @@ public class RobotBrain : Agent
 
     //用于奖励计算
     private float RewardDelayRate = 0.001f;
-   
+
 
 
 
     private void FixedUpdate()
     {
-      
+
         int currentFloorhuman = 0;
 
-        foreach (HumanControl human in myEnv.personList)//统计当前楼层的人数
+        if (myEnv.personList != null)
         {
-            if (human.isActiveAndEnabled)
+            foreach (HumanControl human in myEnv.personList)//统计当前楼层的人数
             {
-                currentFloorhuman++;
+                if (human.isActiveAndEnabled)
+                {
+                    currentFloorhuman++;
+                }
             }
-        }
-        floor_human = currentFloorhuman;
-        //print("当前楼层人数为:" + floor_human); 
-        Vector3 robotPosition = robot.transform.position;
-        robotPosition.y = 0.5f;
+            floor_human = currentFloorhuman;
+            //print("当前楼层人数为:" + floor_human); 
+            Vector3 robotPosition = robot.transform.position;
+            robotPosition.y = 0.5f;
 
-        // 如果不是训练模式，机器人就自己进行移动，暂时不使用训练收集的数据
+            // 如果不是训练模式，机器人就自己进行移动，暂时不使用训练收集的数据
 
-        //Debug.Log("每一帧更新");
-        // 每个时间步都要求决策,决策后才会收集信息以及执行操作,后续函数执行的前置条件
+            //Debug.Log("每一帧更新");
+            // 每个时间步都要求决策,决策后才会收集信息以及执行操作,后续函数执行的前置条件
 
-       
-        AddReward(-RewardDelayRate * floor_human);
-        LogReward("持续时间惩罚", -RewardDelayRate * floor_human );
-        //RequestDecision();
 
-        if (myEnv.isTraining is false)
-        {
-            //print("当前楼层人数为:" + floor_human);
-            int lonelyHumanLeaderCounter = (from human in myEnv.personList
-                                            let humanPosition = human.transform.position - new Vector3(0, 0.5f, 0)
-                                            where human.isActiveAndEnabled && Mathf.Abs(humanPosition.y - robotPosition.y) < 0.5f
-                                            select human).Count(human => human.myBehaviourMode is "Leader" && human.transform.position.z > 0);
+            AddReward(-RewardDelayRate * floor_human);
+            LogReward("持续时间惩罚", -RewardDelayRate * floor_human);
+            //RequestDecision();
 
-            //print("孤独人类领导者的数量为："+lonelyHumanLeaderCounter);
+            if (myEnv.isTraining is false)
+            {
+                //print("当前楼层人数为:" + floor_human);
+                int lonelyHumanLeaderCounter = (from human in myEnv.personList
+                                                let humanPosition = human.transform.position - new Vector3(0, 0.5f, 0)
+                                                where human.isActiveAndEnabled && Mathf.Abs(humanPosition.y - robotPosition.y) < 0.5f
+                                                select human).Count(human => human.myBehaviourMode is "Leader" && human.transform.position.z > 0);
 
-            if (lonelyHumanLeaderCounter <= 10)
-            {//人类领导者数量（lonelyHumanLeaderCounter）小于等于4，并且机器人跟随者数量（robotInfo.robotFollowerCounter）等于0时，条件1为真;人类领导者数量（lonelyHumanLeaderCounter）等于0时，条件2为真
-                robot.GetComponent<RobotControl>().isRunning = true;//机器人开始工作,人类开始跟随机器人
-                GMoveAgent();
-                return;
+                //print("孤独人类领导者的数量为："+lonelyHumanLeaderCounter);
+
+                if (lonelyHumanLeaderCounter <= 10)
+                {//人类领导者数量（lonelyHumanLeaderCounter）小于等于4，并且机器人跟随者数量（robotInfo.robotFollowerCounter）等于0时，条件1为真;人类领导者数量（lonelyHumanLeaderCounter）等于0时，条件2为真
+                    robot.GetComponent<RobotControl>().isRunning = true;//机器人开始工作,人类开始跟随机器人
+                    GMoveAgent();
+                    return;
+                }
             }
         }
     }//定帧更新
@@ -299,20 +302,20 @@ public class RobotBrain : Agent
     }
     private void GMoveAgent()
     {
-        print("移动机器人函数");
+        //print("移动机器人函数");
         Vector3 targetPosition = new();
         Vector3 robotPosition = robot.transform.position;
         //print("机器人的跟随者数量为：" + robotInfo.myDirectFollowers.Count);
         if (robotInfo.robotFollowerCounter > 0)//如果当前机器人当前跟随者大于0个，前往出口
         {
-            print("跟随人类数量大于0");
+          //  print("跟随人类数量大于0");
             //随机一个出口，将人送到出口
             //print("2机器人检测到的出口数量为："+myEnv.Exits.Count);
             targetPosition = GetCrossDoorDestination(myEnv.Exits[0].gameObject);
         }
         else
         {
-            print("没有人类跟随，寻找距离最近的人类");
+            //print("没有人类跟随，寻找距离最近的人类");
             //找到离机器人最近的人类，并朝其进行移动
             float minDist = int.MaxValue;
             //float minDist = 18f;

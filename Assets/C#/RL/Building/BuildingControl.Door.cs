@@ -269,5 +269,7 @@ public partial class BuildingControl : MonoBehaviour
             }
         }
         thisDoor.AddNavMeshLink();
+
+
     }
 }

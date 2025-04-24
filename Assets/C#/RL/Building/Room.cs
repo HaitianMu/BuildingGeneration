@@ -5,14 +5,14 @@ using UnityEngine;
 
 public class Room : MonoBehaviour//为房间增加一些属性，比如房间的坐标、大小，以及它的邻居列表（用于记录相邻房间）。
 {
-    public Vector3 xzPosition;       // 房间的左下角坐标
-    public float width;            // 房间的宽度
-    public float height;           // 房间的高度
-    /*！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！3.12日新增*/
-    public float roomSize; //用于存放房间的面积大小
-    /* ！！！！！！！！！！！！！！！！！！！！！！！！！！4.4日新增*/
-    public String roomName;//记录房间的名字，
-    public string[] ConnectedRoom; //用来记录邻接房间的名字
+    public Vector3 xzPosition;          // Lower-left corner coordinates of the room
+    public float width;                // Width of the room
+    public float height;               // Height of the room
+    /*!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Added on 3.12 */
+    public float roomSize;            // Size of the room (area)
+    /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Added on 4.4 */
+    public String roomName;          // Name of the room
+    public string[] ConnectedRoom;    // Names of adjacent rooms
 
     public Room() { }
     public Room(GameObject roomObject, Vector3 position, float width, float height)
