@@ -17,7 +17,6 @@ public partial class EnvControl : MonoBehaviour
 
     public List<FireControl>FireList = new();
 
-
     //环境中的出口
     public List<GameObject> Exits=new();
     //存储房间和门的位置信息
@@ -49,15 +48,9 @@ public partial class EnvControl : MonoBehaviour
 
     /*展示Demo使用，用于场景重置!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
     public int currentFloorhuman=0;
-
     public int StepCount;//计数器
     public int MaxStep;//最大步数
-
     public int layoutNum;
-
-    private int fireSpawnInterval = 100; // 可配置的生成间隔
-
-    private Transform fireParent; // 缓存父物体
 
    //引入火焰机制4.20 ！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
     //手动添加火焰时的火焰位置缓存
@@ -81,6 +74,7 @@ public partial class EnvControl : MonoBehaviour
             string[] name = { "layout1", "layout2", "layout3", "layout4",
                 "apartment", "family_house", "clinic", "elementary_school", "hospital_er","tech_office", "shopping_mall" };
             //string layoutname = name[layoutNum];
+
             string layoutname = "shopping_mall";
             print("读取的布局名称为：" + layoutname);
 
@@ -109,8 +103,7 @@ public partial class EnvControl : MonoBehaviour
 
             /*  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
             //手动添加的火焰位置
-            FirePosition.Add(new Vector3(3, 0, 44));
-            FirePosition.Add(new Vector3(32, 0, 44));
+            AddFirePosition();
             FireNum = 0;
         }
     }
@@ -441,4 +434,78 @@ public partial class EnvControl : MonoBehaviour
         RandomPos=new Vector3(x,0,z);
         return RandomPos;
     }
+
+
+
+    public void AddFirePosition()//找到场景中的左上，右上，右下三个房间，将他们的中心作为三个火源的位置
+    {
+        if (complexityControl.buildingGeneration.roomList == null || complexityControl.buildingGeneration.roomList.Count == 0)
+        {
+            Debug.LogError("房间列表为空！");
+            return;
+        }
+
+        // 初始化关键变量（单次遍历完成所有计算）
+        Room topLeftRoom = null;
+        Room topRightRoom = null;
+        Room bottomRightRoom = null;
+        float minX = float.MaxValue;
+        float maxX = float.MinValue;
+
+        // 单次遍历处理所有逻辑
+        foreach (Room room in complexityControl.buildingGeneration.roomList)
+        {
+            float x = room.xzPosition.x;
+            float z = room.xzPosition.z;
+
+            // 更新左上房间逻辑
+            if (x < minX || (x == minX && z > topLeftRoom?.xzPosition.z))
+            {
+                minX = x;
+                topLeftRoom = room;
+            }
+            else if (x == minX && z > topLeftRoom.xzPosition.z)
+            {
+                topLeftRoom = room;
+            }
+
+            // 更新右上和右下房间逻辑
+            if (x > maxX)
+            {
+                maxX = x;
+                topRightRoom = room;
+                bottomRightRoom = room;
+            }
+            else if (x == maxX)
+            {
+                // 更新右上（取Z最大）
+                if (z > topRightRoom.xzPosition.z)
+                {
+                    topRightRoom = room;
+                }
+                // 更新右下（取Z最小）
+                if (z < bottomRightRoom.xzPosition.z)
+                {
+                    bottomRightRoom = room;
+                }
+            }
+        }
+
+        // 计算中心点
+        Vector3 topLeftCenter = CalculateRoomCenter(topLeftRoom);
+        Vector3 topRightCenter = CalculateRoomCenter(topRightRoom);
+        Vector3 bottomRightCenter = CalculateRoomCenter(bottomRightRoom);
+
+        FirePosition.Add(topLeftCenter);
+        FirePosition.Add(topRightCenter);
+        FirePosition.Add(bottomRightCenter);
+    }
+
+    // 保持原有中心计算方法
+    private Vector3 CalculateRoomCenter(Room room) =>
+        new Vector3(
+            room.xzPosition.x + room.width / 2f,
+            room.xzPosition.y,
+            room.xzPosition.z + room.height / 2f
+        );
 }
