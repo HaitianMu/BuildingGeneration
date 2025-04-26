@@ -14,7 +14,7 @@ public class FirePoolManager : MonoBehaviour
     void Awake()
     {
         Instance = this;
-        fireParent = new GameObject("FireList").transform;
+        fireParent = GameObject.Find("FireList").transform;
         InitializePool();
     }
 
@@ -44,6 +44,13 @@ public class FirePoolManager : MonoBehaviour
             return null; // 达到最大数量限制
         }
 
+        // 确保 fire 对象没有被销毁
+        if (fire == null)
+        {
+            Debug.LogError("火焰实例已经被销毁了");
+            return null;
+        }
+
         fire.transform.position = position;
         fire.transform.rotation = rotation;
         fire.SetActive(true);
@@ -57,7 +64,25 @@ public class FirePoolManager : MonoBehaviour
 
     public void ReturnFire(GameObject fire)
     {
+        if (fire == null)
+        {
+            Debug.LogWarning("Trying to return a null fire object.");
+            return;
+        }
+        
+
         fire.SetActive(false);
         firePool.Enqueue(fire);
+    }
+    public void ClearPool()
+    {
+        while (firePool.Count > 0)
+        {
+            var fire = firePool.Dequeue();
+            if (fire != null)
+            {
+                Destroy(fire);
+            }
+        }
     }
 }

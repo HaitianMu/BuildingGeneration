@@ -8,6 +8,8 @@ using UnityEngine.AI;
 using System.Linq;
 using Unity.Barracuda;
 using TMPro;
+using System.IO.Abstractions;
+using UnityEditor;
 
 public class RobotBrain : Agent
 {
@@ -41,71 +43,55 @@ public class RobotBrain : Agent
     private float RewardDelayRate = 0.001f;
 
 
-
+    public bool isInitialized = false;//用来控制初始化函数先执行
 
     private void FixedUpdate()
     {
-
-        int currentFloorhuman = 0;
-
-        if (myEnv.personList != null)
+        if (isInitialized)
         {
-            foreach (HumanControl human in myEnv.personList)//统计当前楼层的人数
-            {
-                if (human.isActiveAndEnabled)
-                {
-                    currentFloorhuman++;
-                }
-            }
-            floor_human = currentFloorhuman;
-            //print("当前楼层人数为:" + floor_human); 
-            Vector3 robotPosition = robot.transform.position;
-            robotPosition.y = 0.5f;
+           // print("机器人智能体的帧更新函数");
 
-            // 如果不是训练模式，机器人就自己进行移动，暂时不使用训练收集的数据
+                floor_human = myEnv.currentFloorhuman;
 
-            //Debug.Log("每一帧更新");
-            // 每个时间步都要求决策,决策后才会收集信息以及执行操作,后续函数执行的前置条件
-
-
-            AddReward(-RewardDelayRate * floor_human);
-            LogReward("持续时间惩罚", -RewardDelayRate * floor_human);
-            //RequestDecision();
-
-            if (myEnv.isTraining is false)
-            {
                 //print("当前楼层人数为:" + floor_human);
-                int lonelyHumanLeaderCounter = (from human in myEnv.personList
-                                                let humanPosition = human.transform.position - new Vector3(0, 0.5f, 0)
-                                                where human.isActiveAndEnabled && Mathf.Abs(humanPosition.y - robotPosition.y) < 0.5f
-                                                select human).Count(human => human.myBehaviourMode is "Leader" && human.transform.position.z > 0);
+                Vector3 robotPosition = robot.transform.position;
+                robotPosition.y = 0.5f;
 
-                //print("孤独人类领导者的数量为："+lonelyHumanLeaderCounter);
+                // 如果不是训练模式，机器人就自己进行移动，暂时不使用训练收集的数据
 
-                if (lonelyHumanLeaderCounter <= 10)
-                {//人类领导者数量（lonelyHumanLeaderCounter）小于等于4，并且机器人跟随者数量（robotInfo.robotFollowerCounter）等于0时，条件1为真;人类领导者数量（lonelyHumanLeaderCounter）等于0时，条件2为真
-                    robot.GetComponent<RobotControl>().isRunning = true;//机器人开始工作,人类开始跟随机器人
-                    GMoveAgent();
-                    return;
+                //Debug.Log("每一帧更新");
+                // 每个时间步都要求决策,决策后才会收集信息以及执行操作,后续函数执行的前置条件
+
+                AddReward(-RewardDelayRate * floor_human);
+                LogReward("持续时间惩罚", -RewardDelayRate * floor_human);
+
+                //根据逻辑运行时，通过侦察该层的人数，来决定是否继续移动！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
+                if (myEnv.isTraining is false)
+                {
+                    //print("当前楼层人数为:" + floor_human);
+                    int lonelyHumanLeaderCounter = (from human in myEnv.personList
+                                                    let humanPosition = human.transform.position - new Vector3(0, 0.5f, 0)
+                                                    where human.isActiveAndEnabled && Mathf.Abs(humanPosition.y - robotPosition.y) < 0.5f
+                                                    select human).Count(human => human.myBehaviourMode is "Leader" && human.transform.position.z > 0);
+
+                    //print("孤独人类领导者的数量为："+lonelyHumanLeaderCounter);
+
+                    if (lonelyHumanLeaderCounter <= 10)
+                    {//人类领导者数量（lonelyHumanLeaderCounter）小于等于4，并且机器人跟随者数量（robotInfo.robotFollowerCounter）等于0时，条件1为真;人类领导者数量（lonelyHumanLeaderCounter）等于0时，条件2为真
+                        robot.GetComponent<RobotControl>().isRunning = true;//机器人开始工作,人类开始跟随机器人
+                        GMoveAgent();
+                        return;
+                    }
                 }
-            }
+                //根据逻辑运行时，通过侦察该层的人数，来决定是否继续移动！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
+  
         }
     }//定帧更新
-/*public override void OnEpisodeBegin()
+    public override void OnEpisodeBegin()
     {
-        Debug.Log("一次训练开始了");
-        myEnv.CleanTheScene();
-        int number2 = 15;
-            //UnityEngine.Random.Range(8, 15); // 划分的房间数量
-        myEnv.complexityControl.BeginGenerationBinary(900, number2);
-        myEnv.surface.BuildNavMesh();//生成导航
-        myEnv.AddPerson(10);
-        myEnv.AddRobot();//添加机器人
-        myEnv.AddExits();//添加出口，以便于后续机器人导航使用
-        myEnv.AddRobotBrain();//添加机器人大脑
-        //myEnv.cachedDoorPositions=myEnv.GetAllDoorPositions();//添加门的位置信息
-        myEnv.cachedRoomPositions=myEnv.GetAllRoomPositions();//添加房间的位置信息
-    }*/
+        print("机器人一个新的回合开始了");
+
+    }
 
     public override void CollectObservations(VectorSensor sensor)
     {
@@ -164,7 +150,7 @@ public class RobotBrain : Agent
             Vector3 normalizedPos = (roomPos) / envMaxSize;
             sensor.AddObservation(normalizedPos.x); // X坐标 [-1, 1]
             sensor.AddObservation(normalizedPos.z); // Z坐标 [-1, 1]
-         //  Debug.Log("房间的位置为" + normalizedPos);
+                                                    //  Debug.Log("房间的位置为" + normalizedPos);
         }
 
         //添加出口位置   3个          39+[24,45]=[63,84]
@@ -263,7 +249,7 @@ public class RobotBrain : Agent
         //将目标位置映射在整个房间区域内部
        // Debug.Log("区域的宽度为"+myEnv.complexityControl.buildingGeneration.totalWidth);
         //Debug.Log("区域的高度为" + myEnv.complexityControl.buildingGeneration.totalHeight);
-        Debug.Log($"Actions: [{continuousActions[0]}, {continuousActions[1]}]");
+        //Debug.Log($"Actions: [{continuousActions[0]}, {continuousActions[1]}]");
         float targetX = Mathf.Clamp(continuousActions[0], -1, 1) * (myEnv.complexityControl.buildingGeneration.totalWidth / 2f) + (myEnv.complexityControl.buildingGeneration.totalWidth / 2f);
         float targetZ = Mathf.Clamp(continuousActions[1], -1, 1) * (myEnv.complexityControl.buildingGeneration.totalHeight / 2f) + (myEnv.complexityControl.buildingGeneration.totalHeight / 2f);
         Vector3 targetPosition = new(targetX, 0.5f, targetZ);

@@ -199,21 +199,21 @@ public partial class HumanControl : MonoBehaviour
         
         if (leaderCandidates.Count > 0)//在视野里看到了机器人
         {
-            print("附近有个机器人，我好害怕");
+           // print("附近有个机器人，我好害怕");
             if (robotDetectTime == 0)
             {
                 robotDetectTime = Time.time; // 记录首次检测时间,这里每一帧都会更新一次时间。你引导个P
-                print("这个机器人是在"+robotDetectTime+"开始跟着我的");
+              //  print("这个机器人是在"+robotDetectTime+"开始跟着我的");
             }
             GameObject leader = leaderCandidates[0];
             float robotDistance = Vector3.Distance(transform.position, leader.transform.position);
             // 对抗条件：恐慌度较高且机器人接近,只有恐慌度较高时才会进入该状态
           if ( robotDistance < 3f)
              {
-                // 第一阶段：抗拒（持续3-5秒）
-                if (Time.time - robotDetectTime < Random.Range(3f, 5f))
+                // 第一阶段：抗拒2s
+                if (Time.time - robotDetectTime < 2  )
                 {
-                    print("现在时间是"+"ta跟着我"+ (Time.time - robotDetectTime) + "s了，我要离他远一点");
+                   // print("现在时间是"+"ta跟着我"+ (Time.time - robotDetectTime) + "s了，我要离他远一点");
                     // 推开行为
                     Vector3 pushDir = (transform.position - leader.transform.position).normalized;
                     _myNavMeshAgent.velocity = pushDir * 2f;
@@ -225,7 +225,7 @@ public partial class HumanControl : MonoBehaviour
                 // 第二阶段：屈服
                 else
                 {
-                    print("它好像是来救我的，我跟着他走吧");
+                   // print("它好像是来救我的，我跟着他走吧");
                     robotDetectTime = 0;
                     UsePanic = false;//弃用人类的恐慌状态
                 }

@@ -84,7 +84,7 @@ public class ComplexityControl : MonoBehaviour
 
     public void BeginGenerationJsonLoad(string filename,string layoutname)
     {
-         Debug.Log("BeginGenerationJson");
+        // Debug.Log("BeginGenerationJson");
         
             buildingGeneration.ClearPreviousRooms();
             buildingGeneration.GenerateRoomsJsonLoad( filename,layoutname);  // 调用房间生成方法

@@ -341,7 +341,6 @@ MonoBehaviour:
   FireList: []
   Exits: []
   cachedRoomPositions: []
-  cachedDoorPositions: []
   complexityControl: {fileID: 928955280}
   surface: {fileID: 1986788709}
   HumanPrefab: {fileID: 4212430261449273798, guid: c919a25b8f5be4e4ab0cf61b53fc2f9a, type: 3}
@@ -354,13 +353,16 @@ MonoBehaviour:
   humanParent: {fileID: 1341671606}
   TotalSize: 0
   RoomNum: 0
-  isTraining: 0
+  isTraining: 1
   useRobot: 1
   useFireAgent: 0
   currentFloorhuman: 0
+  FireStep: 0
   StepCount: 0
   MaxStep: 0
   layoutNum: 0
+  FirePosition: []
+  FireNum: 0
 --- !u!1001 &789708396
 PrefabInstance:
   m_ObjectHideFlags: 0

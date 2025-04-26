@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 using static JsonLoad;
 
@@ -14,7 +15,7 @@ public partial class BuildingControl : MonoBehaviour
     {
         public string name;
         public String ExitRoom;
-        public String ExitDoorPosition ;//right left forward backward
+        public String ExitDoorPosition;//right left forward backward
         public Room[] rooms;
     }
 
@@ -28,8 +29,11 @@ public partial class BuildingControl : MonoBehaviour
     {
         LoadRoomDataFromJson(filename, layoutname);//从json文件中加载房间数组的数据
         CreateRoomBinary(roomList);//在场景中生成房间
+
+        GetMaxXZofLayout(roomList);//得到该场景所在矩形的右上角坐标，用于后续训练时的观测量归一化
+
         Room[][] CN = LoadDoorDataFromJson(filename, layoutname);//生成的不再是严格的对称矩阵，可能是锯齿形的，只存储了需要的信息
-       // print("roomList中的房间为：" + roomList);
+                                                                 // print("roomList中的房间为：" + roomList);
         CreateDoorBetweenRooms(CN); //根据连通图CN生成门
         AddExitDoors(filename, layoutname);
     }
@@ -46,7 +50,7 @@ public partial class BuildingControl : MonoBehaviour
                          "- 文件扩展名是否为 .json");
             return;
         }
-       // Debug.Log("原始JSON内容:\n" + jsonFile.text);
+        // Debug.Log("原始JSON内容:\n" + jsonFile.text);
         // 2. 使用 Newtonsoft.Json 解析，读取json文件这一步没问题。那应该就是解析的时候出错了
         try
         {
@@ -90,7 +94,7 @@ public partial class BuildingControl : MonoBehaviour
     public Room[][] LoadDoorDataFromJson(string filename, string layoutname)
     {
         //这一步是没问题的，已经检查过了，那应该就是下面的算法出现问题了
-       /* Debug.Log("加载门的数据 ");*/
+        /* Debug.Log("加载门的数据 ");*/
         // 1. 加载并解析JSON文件
         TextAsset jsonFile = Resources.Load<TextAsset>(filename); //加载json数据到jsonFile当中
         if (jsonFile == null)
@@ -246,7 +250,7 @@ public partial class BuildingControl : MonoBehaviour
             if (data == null || data.Layouts == null)
             {
                 Debug.LogError("JSON解析失败，请检查格式是否正确");
-                return ;
+                return;
             }
 
             // 查找指定的 Layout
@@ -256,37 +260,41 @@ public partial class BuildingControl : MonoBehaviour
                 Debug.LogError("没有找到目标布局，请检查提供的布局名称是否正确");
                 return;
             }
-            Debug.Log(targetLayout.ExitRoom);
-            Debug.Log(targetLayout.ExitDoorPosition);
+            //Debug.Log(targetLayout.ExitRoom);
+            //Debug.Log(targetLayout.ExitDoorPosition);
 
             // 查找目标逃生房间
-            foreach (Room room in roomList) {
-            if(room.roomName ==targetLayout.ExitRoom ) {
-                EscapeRoom = room;
+            foreach (Room room in roomList)
+            {
+                if (room.roomName == targetLayout.ExitRoom)
+                {
+                    EscapeRoom = room;
                     break;
                 }
             }
             //查找门在该房间的位置，right left forward backward
 
-            Vector3 DoorPosition =GetDoorPosition(EscapeRoom,targetLayout.ExitDoorPosition);
-            string DoorPOS= targetLayout.ExitDoorPosition;
-          
+            Vector3 DoorPosition = GetDoorPosition(EscapeRoom, targetLayout.ExitDoorPosition);
+            string DoorPOS = targetLayout.ExitDoorPosition;
+
             if (DoorPOS == "right")
             {
                 CreateDoor(DoorPosition, 0.1f, true, "Exit");
             }
 
-            else if (DoorPOS == "left") {
+            else if (DoorPOS == "left")
+            {
                 CreateDoor(DoorPosition, 0.1f, true, "Exit");
             }
             else if (DoorPOS == "forward")
             {
                 CreateDoor(DoorPosition, 0.1f, false, "Exit");
             }
-            else if (DoorPOS == "backward") {
+            else if (DoorPOS == "backward")
+            {
                 CreateDoor(DoorPosition, 0.1f, false, "Exit");
             }
-            return ;
+            return;
         }
         catch (Exception e)
         {
@@ -294,8 +302,6 @@ public partial class BuildingControl : MonoBehaviour
             return;
         }
     }
-
-
 
     private Vector3 GetDoorPosition(Room escapeRoom, string doorPosition)
     {
@@ -340,5 +346,24 @@ public partial class BuildingControl : MonoBehaviour
 
         return doorPos;
     }
+
+    private void GetMaxXZofLayout(List<Room> roomList)
+    {
+        float maxX = 0f;
+        float maxZ = 0f;
+        foreach (Room room in roomList)
+        {
+            // 计算房间的右上角坐标（左下角xzPosition + width/height）
+            float roomMaxX = room.xzPosition.x + room.width;
+            float roomMaxZ = room.xzPosition.z + room.height;
+
+            // 更新全局最大值
+            maxX = Mathf.Max(maxX, roomMaxX);
+            maxZ = Mathf.Max(maxZ, roomMaxZ);
+        }
+        totalWidth = maxX;
+        totalHeight = maxZ;
+    }
+
 }
 

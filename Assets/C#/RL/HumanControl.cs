@@ -91,6 +91,7 @@ public partial class HumanControl: MonoBehaviour
             if (myLeader is not null)
             {
                     myLeader.GetComponent<RobotControl>().myDirectFollowers.Remove(gameObject.GetComponent<HumanControl>());
+                myEnv.currentFloorhuman--;
             }
             Debug.Log("人类死亡");
             myEnv.BrainList[0].AddReward(-30);
@@ -446,9 +447,8 @@ public partial class HumanControl: MonoBehaviour
                 break;
 
             case "Fire":
-                myEnv.currentFloorhuman--;
                 this.health -= 5;  //人类直接嗝屁
-                print("我碰到了火焰，健康值下降");
+                //print("我碰到了火焰，健康值下降");
                 break;
         }
     }

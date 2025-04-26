@@ -171,15 +171,4 @@ public partial class  FireControl : MonoBehaviour
         return false;
     }
 
-    private void OnDestroy()
-    {
-        // 从空间分区移除
-        fireSpatialPartition.Remove(transform.position);
-
-        // 返回到对象池
-        if (FirePoolManager.Instance != null)
-        {
-            FirePoolManager.Instance.ReturnFire(gameObject);
-        }
-    }
 }

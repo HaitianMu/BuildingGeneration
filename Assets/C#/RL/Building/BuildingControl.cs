@@ -7,8 +7,8 @@ public partial class BuildingControl : MonoBehaviour
     /*........................一、房间生成用到的数据结构.....................................*/
     private float totalArea; // 总区域大小
     public int roomNum=10; //需要生成的房间数量
-    public int totalWidth;//用于记录整个区域的宽
-    public int totalHeight;//用于记录整个区域的高
+    public float totalWidth;//用于记录整个区域的宽
+    public float totalHeight;//用于记录整个区域的高
 
 
     public float[] roomAreas;// 输入的房间面积数组（已知数组）

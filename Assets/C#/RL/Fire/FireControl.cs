@@ -33,14 +33,13 @@ public partial class FireControl : MonoBehaviour
     private static readonly WaitForSeconds waitTime = new WaitForSeconds(0.1f);
     //第6帧（0.1秒后）：100个火焰同时执行检查（假设60FPS）
     //所以还是会出现火焰重叠的情况，所以采用随机时间进行扩散
-    private static int activeFireCount = 0;
-    private const int maxActiveFires = 500; // 最大活跃火焰数量
 
     private static SpatialPartition fireSpatialPartition = new SpatialPartition(1f);
 
 
     void Start() //初始化
     {
+
         _surroundingsStatus = new List<bool> { true, true, true, true };
        // print("火焰的初始化函数");
         this.enabled = true;    //启动脚本  
@@ -73,49 +72,31 @@ public partial class FireControl : MonoBehaviour
             StartCoroutine(TrySpreadFire());
             enabled = false; // 扩散后禁用
         }
-        spreadingCountDown--;
-        /*_isPossibleToSpread = IsPossibleToSpread();
-        if (_isPossibleToSpread is false)
-        {
-            this.enabled = false;   //当不能扩散时就ban掉
-            return;
-        }
-
-        if (spreadingCountDown == 0)//计数为0开始扩散
-        {
-            for (int Index = 0; Index < _surroundingsStatus.Count; Index++) //依次检测四周进行扩散
-            {
-                //要加时间，不然会直接爆炸！！！！！！！！！！！！
-                if (_surroundingsStatus[Index]) //如果可以进行扩散
-                {
-                    Vector3 blockPosition = Vector3.zero;
-                    switch (Index)
-                    {
-                        case 0: blockPosition = this.gameObject.transform.position + _directionSequence[0]; break;
-                        case 1: blockPosition = this.gameObject.transform.position + _directionSequence[1]; break;
-                        case 2: blockPosition = this.gameObject.transform.position + _directionSequence[2]; break;
-                        case 3: blockPosition = this.gameObject.transform.position + _directionSequence[3]; break;
-                    }
-
-                    if (activeFireCount<=maxActiveFires) { //火焰超过一定数量之后就不再进行扩散
-                        GameObject tempFire = Instantiate(firePrefab, blockPosition, Quaternion.identity);
-                        tempFire.GetComponent<FireControl>().myEnv = myEnv;
-                        myEnv.FireList.Add(tempFire.GetComponent<FireControl>());
-                        tempFire.transform.parent = this.gameObject.transform.parent;
-                        activeFireCount++;
-                    }
-                }
-            }
-            
-        }
-     spreadingCountDown--;
-        return;*/
+        spreadingCountDown--; 
     }
 
     private void OnTriggerEnter(Collider collision)//碰撞发生，当碰撞的物体是墙时，消除该火焰，当碰撞物体是门是，销毁门
     {
         GameObject triggerObject = collision.gameObject;
-        print("碰撞物体是"+collision.gameObject.tag);
+       // print("碰撞物体是"+collision.gameObject.tag);
        
+    }
+    private void OnDestroy()
+    {
+        // 确保从所有管理系统中移除
+        if (fireSpatialPartition != null)
+        {
+            fireSpatialPartition.Remove(transform.position);
+        }
+
+        if (myEnv != null)
+        {
+            lock (myEnv.FireList)
+            {
+                myEnv.FireList.Remove(this);
+            }
+        }
+
+        StopAllCoroutines();
     }
 }
